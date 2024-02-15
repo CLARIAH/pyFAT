@@ -1,0 +1,35 @@
+[default]
+dynaconf_env="DEFAULT"
+fastapi_title = ""
+fastapi_description = ""
+fastapi_summary = ""
+log_file = "@format {env[BASE_DIR]}/logs/discz.log"
+log_level = 10
+log_format = "%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s"
+vlo_solr_url = 'http://localhost:80/solr/vlo-index'
+metrics_file = "clarin_fip_metrics_v0.1.yaml"
+metrics_pckg = "pyfip.resources.metrics"
+nspace_file = "namespaces.json"
+nspace_pckg = "pyfip.resources"
+
+
+[development]
+dynaconf_env="DEVELOPMENT"
+fastapi_title = ""
+fastapi_description = ""
+fastapi_summary = ""
+log_file = "@format {env[BASE_DIR]}/logs/discz.log"
+log_level = 10
+log_format = "%(asctime)s %(levelname)s %(name)s %(threadName)s => %(message)s"
+vlo_solr_url = 'http://localhost:8183/solr/vlo-index'
+
+
+[staging]
+dynaconf_env="STAGING"
+
+[testing]
+dynaconf_env="TESTING"
+
+
+[production]
+dynaconf_env="PRODUCTION"

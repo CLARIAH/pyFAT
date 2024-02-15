@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cmd:CMD xmlns:cmd="http://www.clarin.eu/cmd/1"
+         xmlns:cmdp="http://www.clarin.eu/cmd/1/profiles/clarin.eu:cr1:p_1288172614026"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         CMDVersion="1.2"
+         xsi:schemaLocation="http://www.clarin.eu/cmd/1 https://infra.clarin.eu/CMDI/1.x/xsd/cmd-envelop.xsd http://www.clarin.eu/cmd/1/profiles/clarin.eu:cr1:p_1288172614026 https://catalog.clarin.eu/ds/ComponentRegistry/rest/registry/1.x/profiles/clarin.eu:cr1:p_1288172614026/xsd">
+   <cmd:Header>
+      <cmd:MdCreator>olac2cmdi.xsl</cmd:MdCreator>
+      <cmd:MdCreationDate>2022-02-26</cmd:MdCreationDate>
+      <cmd:MdSelfLink>oai:easy.dans.knaw.nl:easy-dataset:64135</cmd:MdSelfLink>
+      <cmd:MdProfile>clarin.eu:cr1:p_1288172614026</cmd:MdProfile>
+      <cmd:MdCollectionDisplayName>DANS Easy Archive</cmd:MdCollectionDisplayName>
+   </cmd:Header>
+   <cmd:Resources>
+      <cmd:ResourceProxyList>
+         <cmd:ResourceProxy id="d245e91">
+            <cmd:ResourceType>Resource</cmd:ResourceType>
+            <cmd:ResourceRef>urn:nbn:nl:ui:13-3np9-46</cmd:ResourceRef>
+         </cmd:ResourceProxy>
+         <cmd:ResourceProxy id="d245e94">
+            <cmd:ResourceType>Resource</cmd:ResourceType>
+            <cmd:ResourceRef>https://dx.doi.org/10.17026/dans-zja-pwjg</cmd:ResourceRef>
+         </cmd:ResourceProxy>
+         <cmd:ResourceProxy id="d245e101">
+            <cmd:ResourceType>Resource</cmd:ResourceType>
+            <cmd:ResourceRef>https://easy.dans.knaw.nl/ui/datasets/id/easy-dataset:64135</cmd:ResourceRef>
+         </cmd:ResourceProxy>
+      </cmd:ResourceProxyList>
+      <cmd:JournalFileProxyList/>
+      <cmd:ResourceRelationList/>
+   </cmd:Resources>
+   <cmd:Components>
+      <cmdp:OLAC-DcmiTerms>
+         <cmdp:contributor>Nielsen, J.R.</cmdp:contributor>
+         <cmdp:contributor>Neubert, S.</cmdp:contributor>
+         <cmdp:coverage>Egypt</cmdp:coverage>
+         <cmdp:coverage>1990 - 2009</cmdp:coverage>
+         <cmdp:creator>Hulsman, Drs. C. (Center for Intercultural Dialogue and Translation (CIDT))</cmdp:creator>
+         <cmdp:date>2009-05-01</cmdp:date>
+         <cmdp:date>2017-04-04</cmdp:date>
+         <cmdp:date>2016-03-16</cmdp:date>
+         <cmdp:description>This report provides an overview of several human rights organizations operating in Egypt. To map these organizations, to highlight their scope and to illustrate possibilities for synergies in order to promote cooperation is the main purpose of this research. The legal status of NGOs and the effects of the Associations Law 84, issued by the Egyptian government in 2002, is a focal point. The difficulties NGOs meet in obtaining a legal status as a Non-governmental organization,  reflect in complications in fundraising and discussion about foreign influences.  Furthermore, incidences related to church building, the Christian minority and debates about indicating the religious affiliation on identity cards are expounded in this paper.</cmdp:description>
+         <cmdp:format>pdf</cmdp:format>
+         <cmdp:identifier>urn:nbn:nl:ui:13-3np9-46</cmdp:identifier>
+         <cmdp:identifier>doi:10.17026/dans-zja-pwjg</cmdp:identifier>
+         <cmdp:identifier>AW-Paper20</cmdp:identifier>
+         <cmdp:identifier>https://easy.dans.knaw.nl/ui/datasets/id/easy-dataset:64135</cmdp:identifier>
+         <cmdp:language>en</cmdp:language>
+         <cmdp:relation>title=Thematic Collection: Data from Stichting Arab-West Foundation (AWF). DANS. DOI: 10.17026/dans-22k-22dc; URI=http://dx.doi.org/10.17026/dans-22k-22dc</cmdp:relation>
+         <cmdp:relation>title=Database of Arab-West Report - Media research and commentary from Egypt and The Middle East; URI=http://www.arabwestreport.info/</cmdp:relation>
+         <cmdp:relation>title=Jonas Rye Nielsen, Sandy Neubert, Human Rights Organizations in Egypt  [Arab-West Papers], language ed. Clare Turner, content ed. Cornelis Hulsman, 01.05.2009; URI=http://www.arabwestreport.info/en/human-rights-organizations-egypt-0</cmdp:relation>
+         <cmdp:rights>REQUEST_PERMISSION</cmdp:rights>
+         <cmdp:rights>https://dans.knaw.nl/en/about/organisation-and-policy/legal-information/DANSLicence.pdf</cmdp:rights>
+         <cmdp:rights>Stichting Arab-West Foundation</cmdp:rights>
+         <cmdp:source>Jonas Rye Nielsen, Sandy Neubert, Human Rights Organizations in Egypt  [Arab-West Papers], language ed. Clare Turner, content ed. Cornelis Hulsman, 01.05.2009
+
+http://www.arabwestreport.info/en/human-rights-organizations-egypt-0</cmdp:source>
+         <cmdp:subject xml:lang="en">Area Studies</cmdp:subject>
+         <cmdp:subject xml:lang="en">Sociology</cmdp:subject>
+         <cmdp:subject>human rights</cmdp:subject>
+         <cmdp:subject>NGO</cmdp:subject>
+         <cmdp:subject>legal status</cmdp:subject>
+         <cmdp:subject>freedom of religion</cmdp:subject>
+         <cmdp:subject>freedom of speech</cmdp:subject>
+         <cmdp:subject>Christians in Egypt</cmdp:subject>
+         <cmdp:subject>human rights report</cmdp:subject>
+         <cmdp:subject>funding</cmdp:subject>
+         <cmdp:subject>human rights organizations in the Arab world</cmdp:subject>
+         <cmdp:title>Human Rights Organizations in Egypt, 1990s - 2009</cmdp:title>
+         <cmdp:type>Dataset</cmdp:type>
+      </cmdp:OLAC-DcmiTerms>
+   </cmd:Components>
+</cmd:CMD>
