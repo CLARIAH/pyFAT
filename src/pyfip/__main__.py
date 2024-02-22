@@ -6,6 +6,7 @@ from lxml import etree
 
 from pyfip.fip.preprocessor import Preprocessor
 
+
 def main():
     settings = Dynaconf(settings_files=["conf/settings.toml"], secrets=["conf/.secrets.toml"], environments=True, default_env="default", load_dotenv=True)
 
@@ -28,6 +29,7 @@ def main():
             if found_schemes:
                 print(link.text, found_schemes)
                 if idutils.is_doi(link.text): print("Found DOI")
+
 
 if __name__ == '__main__':
     main()

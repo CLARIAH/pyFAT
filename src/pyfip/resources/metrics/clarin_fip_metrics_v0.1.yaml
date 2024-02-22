@@ -2,72 +2,75 @@
 config:
   metric_specification: https://docs.google.com/spreadsheets/d/1hY2zPmFDZ6aIlY-MupK6gvynQZucOxikFDgv5YWxFyQ
   metric_version: 0.1.0
+  metric_namespaces:
+    cmd: http://www.clarin.eu/cmd/1
+    cmdp: http://www.clarin.eu/cmd/1/profiles/clarin.eu:cr1:p_1288172614026
 metrics:
   ## ---------------- FINDABILITY ---------------- ##
-- metric_identifier: CLFIP-F1-01M
-  metric_number: 1
-  metric_name: Persistent metadata record identifier
-  metric_description: What globally unique, persistent, resolvable identifiers do you use for metadata records?
-  fair_principle: F1
-  target: Metadata
-  test_scoring_mechanism: alternative
-  metric_tests:
-  - metric_test_identifier: CLFIP-F1-01M-1
-    metric_test_name: Hdl or DOI schema must be available from the CMDI MdSelflink.
-    metric_test_score: 1
-    metric_test_maturity: 3
-    metric_test_requirements:
-    - value: '//cmd:Header/cmd:MdSelfLink/text()'
-      target: cmdi_instance
-      modality: any
-      comment: Identifier from MdSelflink of the metadatarecord file.
-      required:
-        name:
-        - DOI
-        - HANDLE
-  created_by: CLARIAH-FIP
-  date_created: 2023-03-01
-  date_updated: 2020-11-25
-  version: 0.1
-  total_score: 1
+  - metric_identifier: CLFIP-F1-01M
+    metric_number: 1
+    metric_name: Persistent metadata record identifier
+    metric_description: What globally unique, persistent, resolvable identifiers do you use for metadata records?
+    fair_principle: F1
+    target: Metadata
+    test_scoring_mechanism: alternative
+    metric_tests:
+      - metric_test_identifier: CLFIP-F1-01M-1
+        metric_test_name: Hdl or DOI schema must be available from the CMDI MdSelflink.
+        metric_test_score: 1
+        metric_test_maturity: 3
+        metric_test_requirements:
+          - value: 'matches(//cmd:MdSelfLink, ''10.\d{4,9}/[-._;()/:A-Z0-9]+$'', ''i'')'
+            target: cmdi_instance
+            modality: any
+            comment: Identifier from MdSelflink of the metadatarecord file.
+            required:
+              name:
+                - DOI
+                - HANDLE
+    created_by: CLARIAH-FIP
+    date_created: 2023-03-01
+    date_updated: 2020-11-25
+    version: 0.1
+    total_score: 1
 
-- metric_identifier: CLFIP-F1-01D
-  metric_number: 2
-  metric_short_name: Unique dataset identifier
-  metric_name: Data MUST be assigned a unique identifier.
-  description: We make a distinction between the uniqueness and persistence of an identifier. Datasets MUST be identified by a unique identifier.
-  fair_principle: F1
-  target: Data
-  evaluation_mechanism: A unique identifier is considered to be valid if the given identifier scheme is DOI, HANDLE or URL.
-  test_scoring_mechanism: alternative
-  metric_tests:
-  - metric_test_identifier: CLFIP-F1-01D-1
-    metric_test_name: Identifier has a persistent identifier scheme of either DOI or HANDLE
-    metric_test_score: 1
-    metric_test_maturity: 3
-    metric_test_requirements:
-    - value: "//cmd:Resources/cmd:ResourceProxyList/cmd:ResourceProxy[cmd:ResourceType/text()='Resource']/cmd:ResourceRef"
-      target: Identifier type
-      modality: any
-      comment: Identifier from Resource ResourceProxy.
-      required:
-        name:
-        - DOI
-        - HANDLE
-  - metric_test_identifier: CLFIP-F1-02D-2
-    metric_test_name: Identifier is a valid URL
-    metric_test_requirements:
-    - value: "//cmd:Resources/cmd:ResourceProxyList/cmd:ResourceProxy[cmd:ResourceType/text()='Resource']/cmd:ResourceRef"
-      target: Identifier type
-      modality: any
-      comment: Identifier from Resource ResourceProxy.
-      required:
-        name:
-        - URL
-    metric_test_score: 1
-    metric_test_maturity: 3
-  created_by: CLARIAH-FIP
-  date_created: 2023-03-01
-  date_updated: 2023-03-01
-  version: 0.1
-  total_score: 1
+  - metric_identifier: CLFIP-F1-01D
+    metric_number: 2
+    metric_short_name: Unique dataset identifier
+    metric_name: Data MUST be assigned a unique identifier.
+    description: We make a distinction between the uniqueness and persistence of an identifier. Datasets MUST be identified by a unique identifier.
+    fair_principle: F1
+    target: Data
+    evaluation_mechanism: A unique identifier is considered to be valid if the given identifier scheme is DOI, HANDLE or URL.
+    test_scoring_mechanism: alternative
+    metric_tests:
+      - metric_test_identifier: CLFIP-F1-01D-1
+        metric_test_name: Identifier has a persistent identifier scheme of either DOI or HANDLE
+        metric_test_score: 1
+        metric_test_maturity: 3
+        metric_test_requirements:
+          - value: "//cmd:Resources/cmd:ResourceProxyList/cmd:ResourceProxy[cmd:ResourceType/text()='Resource']/cmd:ResourceRef/text()"
+            target: Identifier type
+            modality: any
+            comment: Identifier from Resource ResourceProxy.
+            required:
+              name:
+                - DOI
+                - HANDLE
+      - metric_test_identifier: CLFIP-F1-02D-2
+        metric_test_name: Identifier is a valid URL
+        metric_test_requirements:
+          - value: "//cmd:Header/cmd:MdProfile/text()"
+            target: Identifier type
+            modality: any
+            comment: Identifier from Resource ResourceProxy.
+            required:
+              name:
+                - URL
+        metric_test_score: 1
+        metric_test_maturity: 3
+    created_by: CLARIAH-FIP
+    date_created: 2023-03-01
+    date_updated: 2023-03-01
+    version: 0.1
+    total_score: 1

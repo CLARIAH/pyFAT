@@ -159,9 +159,14 @@ with PySaxonProcessor(license=False) as proc:
     print(proc.version)
     xpproc = proc.new_xpath_processor()
     xpproc.set_cwd(os.getcwd())
-    xpproc.set_context(file_name=str(resources.files("tests.resources.cmdi").joinpath("example-md-instance-1_2.cmdi.xml")))
+    xpproc.set_context(file_name=str(resources.files("tests.resources.cmdi").joinpath("albac.xml")))
+
+    xpproc.declare_namespace("cmd", "http://www.clarin.eu/cmd/1")
+    result = xpproc.evaluate("matches(//cmd:MdSelfLink, '10.\d{4,9}/[-._;()/:A-Z0-9]+$', 'i')")
+
+    print("regex eval:", result)
+
     xpproc.declare_namespace("cmd", "http://www.clarin.eu/cmd/1")
     xpproc.set_parameter("f_A_1", proc.make_integer_value(23))
-
     result = xpproc.evaluate("string-join((//cmd:MdCreator,$f_A_1 * 10),':')")
     print(result)

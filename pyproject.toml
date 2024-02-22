@@ -8,9 +8,7 @@ packages = [{include = "pyfip", from = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.12"
-fastapi = "^0.109.0"
 dynaconf = "^3.2.4"
-uvicorn = "^0.26.0"
 pysolr = "^3.9.0"
 setuptools = "^69.0.3"
 simplejson = "^3.19.2"
