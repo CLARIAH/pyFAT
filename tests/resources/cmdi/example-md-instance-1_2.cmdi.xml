@@ -6,7 +6,7 @@
       <cmd:MdCreator>Dieter Van Uytvanck</cmd:MdCreator>
       <cmd:MdCreationDate>2016-07-19</cmd:MdCreationDate>
       <!-- A link to this very file -->
-      <cmd:MdSelfLink>http://www.clarin.eu/cmd/example/example-md-instance.cmdi</cmd:MdSelfLink>
+      <cmd:MdSelfLink>https://dx.doi.org/10.17026/dans-zja-pwjg</cmd:MdSelfLink>
       <!-- A reference to the unique identifier of the profile this metadata instance is based on -->
       <cmd:MdProfile>clarin.eu:cr1:p_1290431694484</cmd:MdProfile>
       <!-- An (optional but recommended) plain text indication to which collection this file belongs. Used for the Collection facet in the VLO -->
@@ -21,12 +21,17 @@
          <cmd:ResourceProxy id="a_photo">
             <cmd:ResourceType mimetype="image/jpeg">Resource</cmd:ResourceType>
             <!-- note that both a normal URL and a handle Persistent Identifier can be used for the ResourceRef -->
-            <cmd:ResourceRef>hdl:1839/00-0000-0000-0009-3C7E-F</cmd:ResourceRef>
+            <cmd:ResourceRef>https://hdl.handle.net/1839/00-0000-0000-0009-3C7E-F</cmd:ResourceRef>
          </cmd:ResourceProxy>
 
          <cmd:ResourceProxy id="a_text">
             <cmd:ResourceType mimetype="text/plain">Resource</cmd:ResourceType>
             <cmd:ResourceRef>http://www.clarin.eu/sometext.txt</cmd:ResourceRef>
+         </cmd:ResourceProxy>
+
+         <cmd:ResourceProxy id="a_any">
+            <cmd:ResourceType mimetype="text/plain">Resource</cmd:ResourceType>
+            <cmd:ResourceRef>https://dx.doi.org/10.17026/dans-zja-pwjg</cmd:ResourceRef>
          </cmd:ResourceProxy>
 
          <cmd:ResourceProxy id="another_md_file">
