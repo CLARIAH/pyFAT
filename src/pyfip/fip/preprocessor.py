@@ -18,7 +18,6 @@ class Preprocessor(object):
     def __new__(cls, settings):
         """Make it a singleton"""
         if cls._instance is None:
-            print('Creating Preprocessor.')
             cls._instance = super(Preprocessor, cls).__new__(cls)
             cls._settings = settings
         else:
