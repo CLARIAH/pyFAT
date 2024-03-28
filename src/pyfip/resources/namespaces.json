@@ -1,4 +1,5 @@
 {
   "cmd": "http://www.clarin.eu/cmd/1",
-  "cmdp": "http://www.clarin.eu/cmd/1/profiles/clarin.eu:cr1:p_1650879720846"
+  "cmdp": "http://www.clarin.eu/cmd/1/profiles/clarin.eu:cr1:p_1650879720846",
+  "js": "http://www.w3.org/2005/xpath-functions"
 }

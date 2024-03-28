@@ -1,0 +1,57 @@
+# LIST OF CLARIN-FIP METRICS AND THEIR RESPONSE OUTPUT FORMATS
+config:
+  metric_specification: https://docs.google.com/spreadsheets/d/1hY2zPmFDZ6aIlY-MupK6gvynQZucOxikFDgv5YWxFyQ
+  metric_version: 0.1.0
+  # WS: namespces loaded from external namespaces.json file. May be included here in the tests
+#  metric_namespaces:
+#    cmd: http://www.clarin.eu/cmd/1
+#    cmdp: http://www.clarin.eu/cmd/1/profiles/clarin.eu:cr1:p_1288172614026
+
+metrics:
+  - metric_identifier: CLFIP-F1-M1M
+    metric_number: M1
+    metric_name: Persistent metadata record identifier
+    metric_description: What globally unique, persistent, resolvable identifiers do you use for metadata records?
+    fair_principle: F1
+    target: Metadata
+    modality: any
+    max_score: 3
+    metric_tests:
+      - metric_test_identifier: CLFIP-F1-M1M-1
+        metric_test_name: DOI schema available from the CMDI MdSelflink.
+        metric_test_score: 3
+        metric_test_requirements:
+#          - test: 'xpath:$facets/js:map/js:string[@key=''_harvesterRoot'']/text()=''NDE Partners'''
+          - test: "xpath:$facets/js:map/js:string[@key='sort-name']/text()='Kikagaku Moyo'" # Check to see if artistname sort-order = 'Kikagaku Moyo'
+#            variable: "facets=json-to-xml(unparsed-text(concat('http://user_admin:docker_secret@localhost:8183/solr/vlo-index/select?wt=json&q=_fileName:*','$RECORDPATH')))"
+            variable: "facets=json-to-xml(unparsed-text(concat('https://musicbrainz.org/ws/2/artist/3a605eba-b6a1-4298-855d-b3033df0bf8b?fmt=',$RECORDPATH)))" # RECORDPATH variable must be known by the caller. Find a way to make this generic.
+            modality: all
+            # processing this test
+            # 1. split test on : prefix(language) = xpath, suffix (test) = $facets/js:map/js:string[@key='_harvesterRoot']='NDE Partners''
+            # 2. do we know prefix?
+            # 3. no, error: unknown language!
+            # 4. yes: pass on to the xpath handler(test) -> result
+
+            # xpath handler(test)
+            # initialize een XPath executor -> xpt (t voor test)
+            # 1. for each variable
+            # a. initialize een XPath executor -> xpv (v voor variable)
+            # b. split on = prefix (varname) = facets, suffix (expr) =  json-to-xml(unparsed-text(concat('http://vlo.clariah.dev.nl/vlo-index?q=_fileName:*','${RECORDPATH}')))
+            # c. zet de globale global variabelen (e.g. cmdi.name -> RECORDPATH) xpv.setVariable(RECORDPATH,cmdi.name) TODO: uitzoeken of dat kan in de python XPath lib
+            # d. varval = xpv.eval(expr) # TODO: moet waarschijnlijk een input hebben ... dat kan gewoon het record zijn of een <null/> document
+            # e. zet de variabele op de test xp xpt.setVariable(varname,varval)
+            # 2. zet de globale global variabelen (e.g. cmdi.name -> RECORDPATH) xpt.setVariable(RECORDPATH,cmdi.name)
+            # 3. if values
+            # a. values = xpt.eval(record.values)
+            # b. for each value in values
+            # i. xpt.setVariable('value',value)
+            # ii. xpt.eval(record,test)
+            # iii. test results += xpt.eval(record,test) context value
+            # 4. if not values
+            # a. xpt.eval(record,test)
+            # b. test results += xpt.eval(record,test)
+            # return results
+    created_by: CLARIAH-FIP
+    date_created: 2023-03-01
+    date_updated: 2020-11-25
+    version: 0.1
