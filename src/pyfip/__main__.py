@@ -59,6 +59,7 @@ def get_metric_result(tst_results: List[TestResult], modality: Modality, max_sco
 
 
 def main():
+    # Make sure to start the solrproxy.py tool to bypass basicAuth.
     settings = Dynaconf(settings_files=["conf/settings.toml"], secrets=["conf/.secrets.toml"], environments=True, default_env="default", load_dotenv=True)
     print("ENV:", settings.DYNACONF_ENV)
     preproc = Preprocessor(settings)
@@ -118,31 +119,37 @@ def main():
             for metric in Preprocessor.get_metrics():
                 print(f'=> Using metric: {metric["metric_name"]} ({metric["metric_identifier"]}), modality: {metric["modality"]}, max_metric_score: {metric["max_score"]}')
 
-                for test in metric["metric_tests"]: #TODO: Looping over multiple variables,
-                    if test['metric_test_requirements'][0]['test'].startswith("xpath:"):
-                        str_xpath = test['metric_test_requirements'][0]['test'].split("xpath:", 1)[1]
-                        var_name = test['metric_test_requirements'][0]['variable'].split("=", 1)[0]
-                        var_value = test['metric_test_requirements'][0]['variable'].split("=", 1)[1]
+                for metric_test in metric["metric_tests"]:
+                    print(f'\t=> Test: {metric_test["metric_test_name"]}')
+                    for metric_test_requirement in metric_test["metric_test_requirements"]:
+                        if metric_test_requirement["test"].startswith("xpath:"):  # 4: In Xpath handler...
+                            xpath_tst = metric_test_requirement["test"].split("xpath:", 1)[1]
+                            print(f'\t\t=> Requirement test: {xpath_tst}')
+                            print(f'\t\t=> Test requirement modality = {metric_test_requirement["modality"]}')
+                            declaration_list = []
+                            declarations =''
+                            if metric_test_requirement.get("variables", False):
+                                for varia in metric_test_requirement.get("variables"):
+                                    var_name = varia.split("=", 1)[0]
+                                    var_val = varia.split("=", 1)[1]
+                                    print(f'\t\t\t=> Var name={var_name}, value={var_val}')
+                                    varproc = proc.new_xpath_processor()
+                                    if '$RECORDPATH' in var_val: # TODO: RECORDPATH variable must be known by the caller. Find a way to make this generic.
+                                        varproc.declare_variable('RECORDPATH')
+                                        varproc.set_parameter('RECORDPATH', proc.make_string_value(cmdi.name, encoding="UTF-8"))
+                                    json_result = varproc.evaluate(var_val)
+                                    xpproc.set_parameter(var_name, json_result)
+                                    declaration_list.append(f"declare variable ${var_name} external")
+                                declarations = '; '.join(declaration_list)
+                                declarations += ";"
+                            print ("Declare ext. vars:", declarations)
+                            xpproc.set_query_content(f"{declarations} {xpath_tst}")
+                            result = xpproc.run_query_to_value(encoding="UTF-8")
+                            print("Result:", result)
+                            # for i in range(result.size):
+                            #     print(result.item_at(i))
 
-                        varproc = proc.new_xpath_processor() #TODO: Looping
-                        varproc.declare_variable('RECORDPATH') #TODO: Need to find a generic way to get and assign value this variable. Now we know it is there/needed
-                        varproc.set_parameter('RECORDPATH', proc.make_string_value("json", encoding="UTF-8")) # must be cmdi.name, now 'json' to prrof concat() works.
-                        # json_result = varproc.evaluate("json-to-xml(unparsed-text(concat(f'http://{settings.solr_vlo_usr}:{solr_vlo_pwd}@localhost:8183/solr/vlo-index/select?wt=json&q=_fileName:*',$RECORDPATH)))") #Does NOT work.
-                        json_result = varproc.evaluate(var_value)
-                        print(f"${var_name} xml: {json_result}")
-                        # xpproc.set_parameter('RECORDPATH', proc.make_string_value(cmdi.name, encoding="UTF-8"))
-                        xpproc.set_parameter(var_name, json_result)
-                        # var_value = var_value.replace("{RECORDPATH}", cmdi.name)
-                        xpproc.set_query_content(f"declare variable $facets external; {str_xpath}") #TODO: Add declarations in a loop here, in case of multiple variables.
-
-                        # result = xpproc.run_query_to_string(query_text='declare variable $'+var_facets_name+' external; '+ var_facets_name) # All in one.
-                        result = xpproc.run_query_to_value(encoding="UTF-8")
-
-                        print("Result:", result)
-                        # print("Result size:", result.size)
-                        for i in range(result.size):
-                            print(result.item_at(i))
-            break
+            # break
 
 
                 #         str_eval = f"for-each({test['metric_test_requirements'][0]['values']}, function($value) {{ {test['metric_test_requirements'][0]['test']} }} )"

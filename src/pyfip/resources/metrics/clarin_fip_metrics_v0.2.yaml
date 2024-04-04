@@ -18,13 +18,25 @@ metrics:
     max_score: 3
     metric_tests:
       - metric_test_identifier: CLFIP-F1-M1M-1
+        metric_test_name: Check to see if artistname sort-name = 'Kikagaku Moyo'
+        metric_test_score: 2
+        metric_test_requirements:
+          - test: "xpath:$musicbrainz/js:map/js:string[@key='sort-name']/text()=$artist"
+            variables: ["musicbrainz=json-to-xml(unparsed-text('https://musicbrainz.org/ws/2/artist/3a605eba-b6a1-4298-855d-b3033df0bf8b?fmt=json'))", "artist='Kikagaku Moyo'"]
+            modality: all
+      - metric_test_identifier: CLFIP-F1-M1M-2
+        metric_test_name: Check to see if _harvesterRoot is 'NDE'
+        metric_test_score: 3
+        metric_test_requirements:
+          - test: "xpath:$facets//js:array[@key='docs']/js:map/js:string[@key='_harvesterRoot']/text()='NDE'"
+            variables: ["facets=json-to-xml(unparsed-text(concat('http://localhost:9098/solr/vlo-index/select?wt=json&q=_fileName:*',$RECORDPATH)))"] # RECORDPATH variable must be known by the caller. Find a way to make this generic.
+            modality: all
+      - metric_test_identifier: CLFIP-F1-M1M-3
         metric_test_name: DOI schema available from the CMDI MdSelflink.
         metric_test_score: 3
         metric_test_requirements:
-#          - test: 'xpath:$facets/js:map/js:string[@key=''_harvesterRoot'']/text()=''NDE Partners'''
-          - test: "xpath:$facets/js:map/js:string[@key='sort-name']/text()='Kikagaku Moyo'" # Check to see if artistname sort-order = 'Kikagaku Moyo'
-#            variable: "facets=json-to-xml(unparsed-text(concat('http://user_admin:docker_secret@localhost:8183/solr/vlo-index/select?wt=json&q=_fileName:*','$RECORDPATH')))"
-            variable: "facets=json-to-xml(unparsed-text(concat('https://musicbrainz.org/ws/2/artist/3a605eba-b6a1-4298-855d-b3033df0bf8b?fmt=',$RECORDPATH)))" # RECORDPATH variable must be known by the caller. Find a way to make this generic.
+          - test: 'xpath:matches(//cmd:MdSelfLink, ''10.\d{4,9}/[-._;()/:A-Z0-9]+$'', ''i'')'
+            variables:
             modality: all
             # processing this test
             # 1. split test on : prefix(language) = xpath, suffix (test) = $facets/js:map/js:string[@key='_harvesterRoot']='NDE Partners''
@@ -36,7 +48,7 @@ metrics:
             # initialize een XPath executor -> xpt (t voor test)
             # 1. for each variable
             # a. initialize een XPath executor -> xpv (v voor variable)
-            # b. split on = prefix (varname) = facets, suffix (expr) =  json-to-xml(unparsed-text(concat('http://vlo.clariah.dev.nl/vlo-index?q=_fileName:*','${RECORDPATH}')))
+            # b. split on '=' prefix (varname) = facets, suffix (expr) =  json-to-xml(unparsed-text(concat('http://vlo.clariah.dev.nl/vlo-index?q=_fileName:*','${RECORDPATH}')))
             # c. zet de globale global variabelen (e.g. cmdi.name -> RECORDPATH) xpv.setVariable(RECORDPATH,cmdi.name) TODO: uitzoeken of dat kan in de python XPath lib
             # d. varval = xpv.eval(expr) # TODO: moet waarschijnlijk een input hebben ... dat kan gewoon het record zijn of een <null/> document
             # e. zet de variabele op de test xp xpt.setVariable(varname,varval)
