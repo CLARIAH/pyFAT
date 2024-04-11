@@ -33,11 +33,56 @@ metrics:
             modality: all
       - metric_test_identifier: CLFIP-F1-M1M-3
         metric_test_name: DOI schema available from the CMDI MdSelflink.
-        metric_test_score: 3
+        metric_test_score: 4
         metric_test_requirements:
           - test: 'xpath:matches(//cmd:MdSelfLink, ''10.\d{4,9}/[-._;()/:A-Z0-9]+$'', ''i'')'
             variables:
             modality: all
+      - metric_test_identifier: CLFIP-F1-M1M-4
+        metric_test_name: ResourceProxy has Metadata type
+        metric_test_score: 4
+        metric_test_requirements:
+          - test: 'xpath:exists(//cmd:ResourceProxy[cmd:ResourceType=''Metadata''])'
+            variables:
+            modality: all
+      - metric_test_identifier: CLFIP-F1-M1M-5
+        metric_test_name: ResourceProxy number
+        metric_test_score: 4
+        metric_test_requirements:
+          - test: 'xpath:if (count(//cmd:ResourceProxy) gt 1) then (1.0) else (if (count(//cmd:ResourceProxy) gt 0) then (0.5) else (0.0))'
+            variables:
+            modality: all
+      - metric_test_identifier: CLFIP-F1-M1M-6
+        metric_test_name: Facet score on curation dashboard
+        metric_test_score: 4
+        metric_test_requirements:
+          - test: 'xpath:doc(concat(''https://curation.clarin.eu/download/profile/'',replace(//cmd:MdProfile,''[^a-zA-Z0-9]'',''_'')))/cmdProfileReport/facetReport/@score'
+            variables:
+            modality: all
+  - metric_identifier: CLFIP-F1-M2M
+    metric_number: M2
+    metric_name: Persistent dataobject record identifier
+    metric_description: What globally unique, persistent, resolvable identifiers do you use for metadata records?
+    fair_principle: F1
+    target: Data
+    modality: any
+    max_score: 3
+    metric_tests:
+      - metric_test_identifier: CLFIP-F1-M2M-1
+        metric_test_name: Check each resource proxy starts with https://hdl.handle.net/
+        metric_test_score: 2
+        metric_test_requirements:
+          - test: 'xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType=''Resource'']/cmd:ResourceRef, function($a) { starts-with($a, ''https://hdl.handle.net/'') })'
+            variables:
+            modality: all
+
+    created_by: CLARIAH-FIP
+    date_created: 2023-03-01
+    date_updated: 2020-11-25
+    version: 0.1
+#
+
+
             # processing this test
             # 1. split test on : prefix(language) = xpath, suffix (test) = $facets/js:map/js:string[@key='_harvesterRoot']='NDE Partners''
             # 2. do we know prefix?
@@ -63,7 +108,3 @@ metrics:
             # a. xpt.eval(record,test)
             # b. test results += xpt.eval(record,test)
             # return results
-    created_by: CLARIAH-FIP
-    date_created: 2023-03-01
-    date_updated: 2020-11-25
-    version: 0.1

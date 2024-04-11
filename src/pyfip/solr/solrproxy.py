@@ -17,16 +17,10 @@ class MyProxy(SimpleHTTPServer.SimpleHTTPRequestHandler):
         authhandler = urllib.request.HTTPBasicAuthHandler(passman)
         opener = urllib.request.build_opener(authhandler)
         urllib.request.install_opener(opener)
-
-        # res = urllib.request.urlopen(url)
-        # res_body = res.read()
-        # print(res_body.decode('utf-8'))
         self.headers.add_header('Content-Type', 'application/json; charset=utf-8')
         self.send_response(200)
         self.end_headers()
         self.copyfile(urllib.request.urlopen(url), self.wfile)
-
-
 
 httpd = socketserver.ForkingTCPServer(('', PORT), MyProxy)
 print ("Now serving at "+str(PORT))

@@ -5,7 +5,7 @@ from importlib import resources
 from typing import List
 
 from dynaconf import Dynaconf
-from saxonche import PySaxonProcessor, PyXdmValue
+from saxonche import PySaxonProcessor, PyXdmValue, PySaxonApiError
 
 from pyfip.fip.preprocessor import Preprocessor
 
@@ -123,6 +123,8 @@ def main():
                     print(f'\t=> Test: {metric_test["metric_test_name"]}')
                     for metric_test_requirement in metric_test["metric_test_requirements"]:
                         if metric_test_requirement["test"].startswith("xpath:"):  # 4: In Xpath handler...
+                            # reset results to None
+                            result = None
                             xpath_tst = metric_test_requirement["test"].split("xpath:", 1)[1]
                             print(f'\t\t=> Requirement test: {xpath_tst}')
                             print(f'\t\t=> Test requirement modality = {metric_test_requirement["modality"]}')
@@ -142,16 +144,18 @@ def main():
                                     declaration_list.append(f"declare variable ${var_name} external")
                                 declarations = '; '.join(declaration_list)
                                 declarations += ";"
-                            print ("Declare ext. vars:", declarations)
+                            # print ("\t\tDeclare ext. vars:", declarations)
                             xpproc.set_query_content(f"{declarations} {xpath_tst}")
-                            result = xpproc.run_query_to_value(encoding="UTF-8")
-                            print("Result:", result)
-                            # for i in range(result.size):
-                            #     print(result.item_at(i))
+                            try: # Looks like the parser might still print a java.io.IOException, that cannot be caught: FODC0002  I/O error reported by XML parser processing https://curation.clarin.eu/download/profile/clarin_eu_cr1_p_1650879720846. Caused by java.io.IOException: Server returned HTTP response code: 500 for URL: (...)
+                                result = xpproc.run_query_to_value(encoding="UTF-8")
+                            except (RuntimeError, BaseException, PySaxonApiError) as error:
+                                print("\t\tError executing Xpath test:", xpath_tst)
+                            print("\t\tTEST Result:", result)
+                            if result:
+                                for i in range(result.size):
+                                    print(result.item_at(i))
 
             # break
-
-
                 #         str_eval = f"for-each({test['metric_test_requirements'][0]['values']}, function($value) {{ {test['metric_test_requirements'][0]['test']} }} )"
                 #         results = xpproc.evaluate(str_eval)
                 #         test_results = get_test_result(results, Modality[test['metric_test_requirements'][0]['modality'].upper()], test["metric_test_score"])

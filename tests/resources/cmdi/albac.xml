@@ -8,6 +8,7 @@
         <cmd:MdCreationDate>2022-07-08+02:00</cmd:MdCreationDate>
         <cmd:MdSelfLink>doi:10.5281/zenodo.3775793</cmd:MdSelfLink>
         <cmd:MdProfile>clarin.eu:cr1:p_1650879720846</cmd:MdProfile>
+<!--        <cmd:MdProfile>clarin.eu:cr1:p_1407745712035</cmd:MdProfile>-->
         <cmd:MdCollectionDisplayName>KB Corpus</cmd:MdCollectionDisplayName>
     </cmd:Header>
     <cmd:Resources>
