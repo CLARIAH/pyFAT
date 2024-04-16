@@ -220,7 +220,8 @@ metrics:
         metric_test_requirements:
           - test: "xpath:exists(//cmd:ResourceProxy[cmd:ResourceType='Resource']/cmd:ResourceRef[starts-with(.,'https://') or starts-with(.,'doi:') or starts-with(.,'hdl:')])"
             modality: all            
-    created_by: CLARIAH-FIP
-    date_created: 2023-03-01
-    date_updated: 2020-11-25
-    version: 0.1
+  #end-of list
+created_by: CLARIAH-FIP
+date_created : 2023-03-01
+date_updated : 2024-04-16
+version: 0.3
