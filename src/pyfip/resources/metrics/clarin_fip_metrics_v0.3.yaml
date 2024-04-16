@@ -1,0 +1,126 @@
+# LIST OF CLARIN-FIP METRICS AND THEIR RESPONSE OUTPUT FORMATS
+config:
+  metric_specification: https://docs.google.com/spreadsheets/d/1hY2zPmFDZ6aIlY-MupK6gvynQZucOxikFDgv5YWxFyQ
+  metric_version: 0.1.0
+  # WS: namespces loaded from external namespaces.json file. May be included here in the tests
+#  metric_namespaces:
+#    cmd: http://www.clarin.eu/cmd/1
+#    cmdp: http://www.clarin.eu/cmd/1/profiles/clarin.eu:cr1:p_1288172614026
+
+metrics:
+  - metric_identifier: CLFIP-F1-M1M
+    metric_number: M1
+    metric_name: Persistent metadata record identifier
+    metric_description: "What globally unique, persistent, resolvable identifiers do you use for metadata records?"
+    fair_principle: F1
+    target: Metadata
+    modality: any
+    max_score: 3
+    metric_tests:
+      - metric_test_identifier: CLFIP-F1-M1M-1
+        metric_test_name: "Check to see if the selflink is a handle"
+        metric_test_score: 2
+        metric_test_requirements:
+          - test: "xpath:starts-with(//cmd:MdSelfLink, 'hdl:')"
+            modality: all
+      - metric_test_identifier: CLFIP-F1-M1M-2
+        metric_test_name: "Check to see if the selflink is a doi"
+        metric_test_score: 3
+        metric_test_requirements:
+          - test: "xpath:starts-with(//cmd:MdSelfLink, 'doi:')"
+            modality: all
+      - metric_test_identifier: CLFIP-F1-M1M-3
+        metric_test_name: "Check to see if the selflink is a HTTP handle"
+        metric_test_score: 3
+        metric_test_requirements:
+          - test: "xpath:starts-with(//cmd:MdSelfLink, 'http://hdl.handle.net/')"
+            modality: all
+      - metric_test_identifier: CLFIP-F1-M1M-4
+        metric_test_name: "Check to see if the selflink is a HTTPS handle"
+        metric_test_score: 3
+        metric_test_requirements:
+          - test: "xpath:starts-with(//cmd:MdSelfLink, 'https://hdl.handle.net/')"
+            modality: all
+      - metric_test_identifier: CLFIP-F1-M1M-5
+        metric_test_name: Check to see if the selflink is a HTTPS doi"
+        metric_test_score: 3
+        metric_test_requirements:
+          - test: "xpath:starts-with(//cmd:MdSelfLink, 'https://doi.org/10.')"
+            modality: all
+      - metric_test_identifier: CLFIP-F1-M1M-6
+        metric_test_name: "Check to see if the selflink is a HTTP doi
+        metric_test_score: 3
+        metric_test_requirements:
+          - test: "xpath:starts-with(//cmd:MdSelfLink, 'http://doi.org/10.')"
+            modality: all
+  - metric_identifier: CLFIP-F1-M1D
+    metric_number: M1
+    metric_name: Persistent data identifiers
+    metric_description: "What globally unique, persistent, resolvable identifiers do you use for datasets?"
+    fair_principle: F1
+    target: Data
+    modality: any
+    max_score: 3
+    metric_tests:
+      - metric_test_identifier: CLFIP-F1-M1D-1
+        metric_test_name: "Check to see if the resource resource proxy is a handle"
+        metric_test_score: 2
+        metric_test_requirements:
+          - test: "xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType=''Resource'']/cmd:ResourceRef, function($a) { starts-with($a, ''hdl:'') })"
+            modality: all
+      - metric_test_identifier: CLFIP-F1-M1D-2
+        metric_test_name: "Check to see if the resource resource proxy is a doi"
+        metric_test_score: 2
+        metric_test_requirements:
+          - test: "xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType=''Resource'']/cmd:ResourceRef, function($a) { starts-with($a, ''hdl:'') })"
+            modality: all
+      - metric_test_identifier: CLFIP-F1-M1D-3
+        metric_test_name: "Check to see if the resource resource proxy is a HTTP handle"
+        metric_test_score: 3
+        metric_test_requirements:
+          - test: "xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType=''Resource'']/cmd:ResourceRef, function($a) { starts-with($a, ''http://hdl.handle.net/'') })"
+            modality: all
+      - metric_test_identifier: CLFIP-F1-M1D-4
+        metric_test_name: "Check to see if the resource resource proxy is a HTTPS handle"
+        metric_test_score: 3
+        metric_test_requirements:
+          - test: "xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType=''Resource'']/cmd:ResourceRef, function($a) { starts-with($a, ''https://hdl.handle.net/'') })"
+            modality: all
+      - metric_test_identifier: CLFIP-F1-M1D-5
+        metric_test_name: "Check to see if the resource resource proxy is a HTTPS doi"
+        metric_test_score: 3
+        metric_test_requirements:
+          - test: "xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType=''Resource'']/cmd:ResourceRef, function($a) { starts-with($a, ''https://doi.org/10.'') })"
+            modality: all
+      - metric_test_identifier: CLFIP-F1-M1D-6
+        metric_test_name: "Check to see if the resource resource proxy is a HTTP doi"
+        metric_test_score: 3
+        metric_test_requirements:
+          - test: "xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType=''Resource'']/cmd:ResourceRef, function($a) { starts-with($a, ''http://doi.org/10.'') })"
+            modality: all
+      - metric_test_identifier: CLFIP-F1-M1D-7
+        metric_test_name: "Check to see if the resource resource proxy is a valid URI"
+        metric_test_score: 3
+        metric_test_requirements:
+          - test: "xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType=''Resource'']/cmd:ResourceRef, function($a) { $a castable as xs:anyURI })"
+            modality: all
+  - metric_identifier: CLFIP-F2-M1
+    metric_number: M1
+    metric_name: metadata schema for findability
+    metric_description: "Which metadata schemas do you use for findability?"
+    fair_principle: F2
+    target: Metadata
+    modality: any
+    max_score: 3
+    metric_tests:
+      - metric_test_identifier: CLFIP-F2-M1-1
+        metric_test_name: "Get the facet coverage of the used CMD profile"
+        metric_test_score: 3
+        metric_test_requirements:
+          - test: "xpath:doc(concat('https://curation.clarin.eu/download/profile/',replace(//cmd:MdProfile,'[^a-zA-Z0-9]','_')))/cmdProfileReport/facetReport/@score"
+            modality: all
+
+    created_by: CLARIAH-FIP
+    date_created: 2023-03-01
+    date_updated: 2020-11-25
+    version: 0.1
