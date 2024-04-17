@@ -1,7 +1,7 @@
 # LIST OF CLARIN-FIP METRICS AND THEIR RESPONSE OUTPUT FORMATS
 config:
   metric_specification: https://docs.google.com/spreadsheets/d/1hY2zPmFDZ6aIlY-MupK6gvynQZucOxikFDgv5YWxFyQ
-  metric_version: 0.1.0
+  metric_version: 0.3
   # WS: namespces loaded from external namespaces.json file. May be included here in the tests
 #  metric_namespaces:
 #    cmd: http://www.clarin.eu/cmd/1
@@ -66,43 +66,43 @@ metrics:
         metric_test_name: "Check to see if the resource resource proxy is a handle"
         metric_test_score: 1
         metric_test_requirements:
-          - test: "xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType=''Resource'']/cmd:ResourceRef, function($a) { starts-with($a, ''hdl:'') })"
+          - test: 'xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType=''Resource'']/cmd:ResourceRef, function($a) { starts-with($a, ''hdl:'') })'
             modality: all
       - metric_test_identifier: CLFIP-F1-M1D-2
         metric_test_name: "Check to see if the resource resource proxy is a doi"
         metric_test_score: 1
         metric_test_requirements:
-          - test: "xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType=''Resource'']/cmd:ResourceRef, function($a) { starts-with($a, ''hdl:'') })"
+          - test: 'xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType=''Resource'']/cmd:ResourceRef, function($a) { starts-with($a, ''hdl:'') })'
             modality: all
       - metric_test_identifier: CLFIP-F1-M1D-3
         metric_test_name: "Check to see if the resource resource proxy is a HTTP handle"
         metric_test_score: 1
         metric_test_requirements:
-          - test: "xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType=''Resource'']/cmd:ResourceRef, function($a) { starts-with($a, ''http://hdl.handle.net/'') })"
+          - test: 'xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType=''Resource'']/cmd:ResourceRef, function($a) { starts-with($a, ''http://hdl.handle.net/'') })'
             modality: all
       - metric_test_identifier: CLFIP-F1-M1D-4
         metric_test_name: "Check to see if the resource resource proxy is a HTTPS handle"
         metric_test_score: 1
         metric_test_requirements:
-          - test: "xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType=''Resource'']/cmd:ResourceRef, function($a) { starts-with($a, ''https://hdl.handle.net/'') })"
+          - test: 'xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType=''Resource'']/cmd:ResourceRef, function($a) { starts-with($a, ''https://hdl.handle.net/'') })'
             modality: all
       - metric_test_identifier: CLFIP-F1-M1D-5
         metric_test_name: "Check to see if the resource resource proxy is a HTTPS doi"
         metric_test_score: 1
         metric_test_requirements:
-          - test: "xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType=''Resource'']/cmd:ResourceRef, function($a) { starts-with($a, ''https://doi.org/10.'') })"
+          - test: 'xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType=''Resource'']/cmd:ResourceRef, function($a) { starts-with($a, ''https://doi.org/10.'') })'
             modality: all
       - metric_test_identifier: CLFIP-F1-M1D-6
         metric_test_name: "Check to see if the resource resource proxy is a HTTP doi"
         metric_test_score: 1
         metric_test_requirements:
-          - test: "xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType=''Resource'']/cmd:ResourceRef, function($a) { starts-with($a, ''http://doi.org/10.'') })"
+          - test: 'xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType=''Resource'']/cmd:ResourceRef, function($a) { starts-with($a, ''http://doi.org/10.'') })'
             modality: all
       - metric_test_identifier: CLFIP-F1-M1D-7
         metric_test_name: "Check to see if the resource resource proxy is a valid URI"
         metric_test_score: 1
         metric_test_requirements:
-          - test: "xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType=''Resource'']/cmd:ResourceRef, function($a) { $a castable as xs:anyURI })"
+          - test: 'xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType=''Resource'']/cmd:ResourceRef, function($a) { $a castable as xs:anyURI })'
             modality: all
   - metric_identifier: CLFIP-F2-M1
     metric_number: M1
@@ -148,14 +148,14 @@ metrics:
         metric_test_score: 1
         metric_test_requirements:
           - test: "xpath:$facets/js:map/js:string[@key='_harvesterRoot']='CLARIN Partners'"
-            variables: ["facets=<TODO>"]
+            variables: ["facets='TODO'"]
             modality: all
       - metric_test_identifier: CLFIP-F4-M1M-2
         metric_test_name: "CLARIAH partners that are also NDE partners"
         metric_test_score: 1
         metric_test_requirements:
           - test: "xpath:$facets/js:map/js:string[@key='_harvesterRoot']='NDE Partners'"
-            variables: ["facets=<TODO>"]
+            variables: ["facets='TODO'"]
             modality: all
   - metric_identifier: CLFIP-F4-M1D
     metric_number: M1

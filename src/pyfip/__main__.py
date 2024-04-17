@@ -9,32 +9,36 @@ from saxonche import PySaxonProcessor, PyXdmValue, PySaxonApiError
 
 from pyfip.fip.preprocessor import Preprocessor
 
-
 @dataclass
 class TestResult:
     success: bool
     score: int
-
 
 @unique
 class Modality(StrEnum):
     ANY = auto()
     ALL = auto()
 
-
-def get_test_result(bool_list: PyXdmValue, modality: Modality, score: int) -> TestResult:
-    if modality is Modality.ANY:
-        for item in bool_list:
-            if item.boolean_value:
-                return TestResult(True, score)
-        return TestResult(False, 0)
-    elif modality is Modality.ALL:
-        for item in bool_list:
-            if not item.boolean_value:
-                return TestResult(False, 0)
-        return TestResult(True, score)
-    else:
-        return TestResult(False, 0)
+def get_test_result(result_list: PyXdmValue, modality: Modality, max_tst_score: int) -> TestResult:
+    if result_list:
+        for item in result_list:
+            # print("\t\tSTR_VALUE:", item.string_value)
+            # print("\t\tDOUBLE_VALUE:", item.double_value)
+            # print("\t\tBLN_VALUE:", item.boolean_value)
+            if item.string_value in ["true", "false"]: # TODO: No method to determine the Python native type: You must cast/ask for a type...
+                if modality is Modality.ANY:
+                    for item in result_list:
+                        if item.boolean_value:
+                            return TestResult(True, max_tst_score)
+                    return TestResult(False, 0)
+                elif modality is Modality.ALL:
+                    for item in result_list:
+                        if not item.boolean_value:
+                            return TestResult(False, 0)
+                    return TestResult(True, max_tst_score)
+            else: # Alternative is a SINGLE number: Value should be between 0 and 1. Calculate the test score accordingly
+                return TestResult(True, round(item.double_value * max_tst_score, 1))
+    return TestResult(True, 0)
 
 
 def get_metric_result(tst_results: List[TestResult], modality: Modality, max_score: int) -> TestResult:
@@ -66,44 +70,6 @@ def main():
     preproc.parse_metrics_yaml()
 
     print(f'Metrics: version: {Preprocessor.get_metrics_version()}; parsed metrics number: {Preprocessor.get_total_metrics()}')
-    # print(f'Namespaces: {Preprocessor.get_nspace_map()}')
-
-
-    # xquery_processor = proc.new_xquery_processor()
-    # xdm_int_value = proc.make_integer_value(12)
-    # # print(xdm_int_value)
-    # xquery_processor.set_parameter('n', xdm_int_value)
-    #
-    # result = xquery_processor.run_query_to_value(query_text='declare variable $n external; (1 to $n)!(. * .)')
-    # print(result.size)
-
-
-        # processing this test
-            # 1. split test on : prefix(language) = xpath, suffix (test) = $facets/js:map/js:string[@key='_harvesterRoot']='NDE Partners''
-            # 2. do we know prefix?
-            # 3. no, error: unknown language!
-            # 4. yes: pass on to the xpath handler(test) -> result
-
-            # xpath handler(test)
-            # initialize een XPath executor -> xpt (t voor test)
-            # 1. for each variable
-            # a. initialize een XPath executor -> xpv (v voor variable)
-            # b. split on = prefix (varname) = facets, suffix (expr) =  json-to-xml(unparsed-text(concat('http://vlo.clariah.dev.nl/vlo-index?q=_fileName:*','${RECORDPATH}')))
-            # c. zet de globale global variabelen (e.g. cmdi.name -> RECORDPATH) xpv.setVariable(RECORDPATH,cmdi.name) TODO: uitzoeken of dat kan in de python XPath lib ==> Wilko: dat kan
-            # d. varval = xpv.eval(expr) # TODO: moet waarschijnlijk een input hebben ... dat kan gewoon het record zijn of een <null/> document ==> Wilko:
-            # e. zet de variabele op de test xp xpt.setVariable(varname,varval)
-            # 2. zet de globale global variabelen (e.g. cmdi.name -> RECORDPATH) xpt.setVariable(RECORDPATH,cmdi.name) #TODO: How to 'interpret'/detect this action from the metrics.yaml? i.o.w: Not every test will need this var
-            # 3. if values
-            # a. values = xpt.eval(record.values)
-            # b. for each value in values
-            # i. xpt.setVariable('value',value)
-            # ii. xpt.eval(record,test)
-            # iii. test results += xpt.eval(record,test) context value
-            # 4. if not values
-            # a. xpt.eval(record,test)
-            # b. test results += xpt.eval(record,test)
-            # return results
-
 
     with PySaxonProcessor(license=False) as proc:
         print("Saxon processor:", proc.version)
@@ -121,6 +87,7 @@ def main():
 
                 for metric_test in metric["metric_tests"]:
                     print(f'\t=> Test: {metric_test["metric_test_name"]}')
+                    metric_tst_results: List[TestResult] = [] # Tst results
                     for metric_test_requirement in metric_test["metric_test_requirements"]:
                         if metric_test_requirement["test"].startswith("xpath:"):  # 4: In Xpath handler...
                             # reset results to None
@@ -150,20 +117,43 @@ def main():
                                 result = xpproc.run_query_to_value(encoding="UTF-8")
                             except (RuntimeError, BaseException, PySaxonApiError) as error:
                                 print("\t\tError executing Xpath test:", xpath_tst)
-                            print("\t\tTEST Result:", result)
-                            if result:
-                                for i in range(result.size):
-                                    print(result.item_at(i))
-
+                            # print("\t\tTEST Result:", result)
+                            # print("\t\tTEST Modality:", Modality[metric_test['metric_test_requirements'][0]['modality'].upper()])
+                            # print("\t\tTEST Max. SCORE:", metric_test["metric_test_score"])
+                            if result: # None result: Do not include this result in the test => TODO: take account for None results in the end/total assessment score. For now just skip them.
+                                test_result = get_test_result(result, Modality[metric_test['metric_test_requirements'][0]['modality'].upper()], metric_test["metric_test_score"])
+                                metric_tst_results.append(test_result)
+                                print ('\t\t', test_result)
+                            # if result:
+                            #     for i in range(result.size):
+                            #         print(result.item_at(i).get_string_value())
             # break
-                #         str_eval = f"for-each({test['metric_test_requirements'][0]['values']}, function($value) {{ {test['metric_test_requirements'][0]['test']} }} )"
-                #         results = xpproc.evaluate(str_eval)
-                #         test_results = get_test_result(results, Modality[test['metric_test_requirements'][0]['modality'].upper()], test["metric_test_score"])
-                #         tst_results.append(test_results)
-                #         print("\t", f'TestID: {test["metric_test_identifier"]}, {test_results.success}, score earned: {test_results.score}')
-                #         # print("\tTEST STATUS:", get_test_result(results, test['metric_test_requirements'][0]['modality'], test["metric_test_score"]))
-                # m_results = get_metric_result(tst_results, Modality[metric['modality'].upper()], metric["max_score"])
-                # print("\t", m_results)
 
 if __name__ == '__main__':
     main()
+
+# processing this test
+# 1. split test on : prefix(language) = xpath, suffix (test) = $facets/js:map/js:string[@key='_harvesterRoot']='NDE Partners''
+# 2. do we know prefix?
+# 3. no, error: unknown language!
+# 4. yes: pass on to the xpath handler(test) -> result
+
+# xpath handler(test)
+# initialize een XPath executor -> xpt (t voor test)
+# 1. for each variable
+# a. initialize een XPath executor -> xpv (v voor variable)
+# b. split on = prefix (varname) = facets, suffix (expr) =  json-to-xml(unparsed-text(concat('http://vlo.clariah.dev.nl/vlo-index?q=_fileName:*','${RECORDPATH}')))
+# c. zet de globale global variabelen (e.g. cmdi.name -> RECORDPATH) xpv.setVariable(RECORDPATH,cmdi.name) TODO: uitzoeken of dat kan in de python XPath lib ==> Wilko: dat kan
+# d. varval = xpv.eval(expr) # TODO: moet waarschijnlijk een input hebben ... dat kan gewoon het record zijn of een <null/> document ==> Wilko:
+# e. zet de variabele op de test xp xpt.setVariable(varname,varval)
+# 2. zet de globale global variabelen (e.g. cmdi.name -> RECORDPATH) xpt.setVariable(RECORDPATH,cmdi.name) #TODO: How to 'interpret'/detect this action from the metrics.yaml? i.o.w: Not every test will need this var
+# 3. if values
+# a. values = xpt.eval(record.values)
+# b. for each value in values
+# i. xpt.setVariable('value',value)
+# ii. xpt.eval(record,test)
+# iii. test results += xpt.eval(record,test) context value
+# 4. if not values
+# a. xpt.eval(record,test)
+# b. test results += xpt.eval(record,test)
+# return results
