@@ -1,25 +1,25 @@
+import decimal
 import os
 from dataclasses import dataclass
 from enum import unique, StrEnum, auto
 from importlib import resources
 from typing import List
 
+import toml
 from dynaconf import Dynaconf
 from saxonche import PySaxonProcessor, PyXdmValue, PySaxonApiError
 
+from pyfip.fip.fipassessment import FipAssessment
 from pyfip.fip.preprocessor import Preprocessor
+from pyfip.fip.testresult import TestResult
 
-@dataclass
-class TestResult:
-    success: bool
-    score: int
 
 @unique
 class Modality(StrEnum):
     ANY = auto()
     ALL = auto()
 
-def get_test_result(result_list: PyXdmValue, modality: Modality, max_tst_score: int) -> TestResult:
+def get_test_result(result_list: PyXdmValue, modality: Modality, max_tst_score: int, test_id: str) -> TestResult:
     if result_list:
         for item in result_list:
             # print("\t\tSTR_VALUE:", item.string_value)
@@ -29,16 +29,16 @@ def get_test_result(result_list: PyXdmValue, modality: Modality, max_tst_score: 
                 if modality is Modality.ANY:
                     for item in result_list:
                         if item.boolean_value:
-                            return TestResult(True, max_tst_score)
+                            return TestResult(True, max_tst_score, test_id)
                     return TestResult(False, 0)
                 elif modality is Modality.ALL:
                     for item in result_list:
                         if not item.boolean_value:
-                            return TestResult(False, 0)
-                    return TestResult(True, max_tst_score)
+                            return TestResult(False, 0, test_id)
+                    return TestResult(True, max_tst_score, test_id)
             else: # Alternative is a SINGLE number: Value should be between 0 and 1. Calculate the test score accordingly
-                return TestResult(True, round(item.double_value * max_tst_score, 1))
-    return TestResult(True, 0)
+                return TestResult(True, round(item.double_value * max_tst_score, 1), test_id)
+    return TestResult(True, 0, test_id)
 
 
 def get_metric_result(tst_results: List[TestResult], modality: Modality, max_score: int) -> TestResult:
@@ -80,7 +80,13 @@ def main():
         xpproc.set_cwd(os.getcwd())
 
         for cmdi in resources.files("tests.resources.cmdi").iterdir():
+
+            pyproject_toml = toml.load(str("../../pyproject.toml"))
+            assessment = FipAssessment(pyproject_toml['tool']['poetry']['name'], pyproject_toml['tool']['poetry']['version'], pyproject_toml['project']['urls']['Repository'])
+
             print(f'\nFile assessment => {str(cmdi)}')
+            assessment.set_assessedresource(str(cmdi))
+            assessment.start_execution_activity("VLO-Harvester", "0000-0002-5228-1970")
             xpproc.set_context(file_name=str(cmdi))
             for metric in Preprocessor.get_metrics():
                 print(f'=> Using metric: {metric["metric_name"]} ({metric["metric_identifier"]}), modality: {metric["modality"]}, max_metric_score: {metric["max_score"]}')
@@ -121,16 +127,23 @@ def main():
                             # print("\t\tTEST Modality:", Modality[metric_test['metric_test_requirements'][0]['modality'].upper()])
                             # print("\t\tTEST Max. SCORE:", metric_test["metric_test_score"])
                             if result: # None result: Do not include this result in the test => TODO: take account for None results in the end/total assessment score. For now just skip them.
-                                test_result = get_test_result(result, Modality[metric_test['metric_test_requirements'][0]['modality'].upper()], metric_test["metric_test_score"])
+                                test_result = get_test_result(result, Modality[metric_test['metric_test_requirements'][0]['modality'].upper()], metric_test["metric_test_score"], metric_test["metric_test_identifier"])
                                 metric_tst_results.append(test_result)
                                 print ('\t\t', test_result)
+                                assessment.add_testresult(test_result)
+            assessment.stop_execution_activity()
+            print(assessment)
                             # if result:
                             #     for i in range(result.size):
                             #         print(result.item_at(i).get_string_value())
+
             # break
 
 if __name__ == '__main__':
     main()
+
+# def create_test_result(tst_results: List[TestResult], modality: Modality, max_score: int) -> TestResult:
+
 
 # processing this test
 # 1. split test on : prefix(language) = xpath, suffix (test) = $facets/js:map/js:string[@key='_harvesterRoot']='NDE Partners''
