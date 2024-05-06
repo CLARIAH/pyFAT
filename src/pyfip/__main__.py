@@ -1,5 +1,7 @@
 import decimal
+import logging
 import os
+import sys
 from dataclasses import dataclass
 from enum import unique, StrEnum, auto
 from importlib import resources
@@ -65,14 +67,23 @@ def get_metric_result(tst_results: List[TestResult], modality: Modality, max_sco
 def main():
     # Make sure to start the solrproxy.py tool to bypass basicAuth.
     settings = Dynaconf(settings_files=["conf/settings.toml"], secrets=["conf/.secrets.toml"], environments=True, default_env="default", load_dotenv=True)
-    print("ENV:", settings.DYNACONF_ENV)
+    print("LOGFILE:", settings.LOG_FILE)
+    file_handler = logging.FileHandler(filename=settings.LOG_FILE)
+    stdout_handler = logging.StreamHandler(stream=sys.stdout)
+    stdout_handler.setFormatter(logging.Formatter(settings.log_format))
+    handlers = [file_handler, stdout_handler]
+    logging.basicConfig(level=settings.LOG_LEVEL, format=settings.LOG_FORMAT, handlers=handlers, datefmt=settings.LOG_DATE_FORMAT)
+    logger = logging.getLogger('pyfat')
+
     preproc = Preprocessor(settings)
     preproc.parse_metrics_yaml()
 
-    print(f'Metrics: version: {Preprocessor.get_metrics_version()}; parsed metrics number: {Preprocessor.get_total_metrics()}')
+    logger.info(f"ENV: {settings.DYNACONF_ENV}")
+    logger.info(f'Metrics: version: {Preprocessor.get_metrics_version()}; number of metrics: {Preprocessor.get_total_metrics()}')
+
 
     with PySaxonProcessor(license=False) as proc:
-        print("Saxon processor:", proc.version)
+        logger.info(f"Saxon processor: {proc.version}" )
         xpproc = proc.new_xquery_processor()
 
         for k, v in Preprocessor.get_nspace_map().items():
@@ -84,30 +95,31 @@ def main():
             pyproject_toml = toml.load(str("../../pyproject.toml"))
             assessment = FipAssessment(pyproject_toml['tool']['poetry']['name'], pyproject_toml['tool']['poetry']['version'], pyproject_toml['project']['urls']['Repository'])
 
-            print(f'\nFile assessment => {str(cmdi)}')
+            logger.info(f'\nCMDI record => {str(cmdi)}')
             assessment.set_assessedresource(str(cmdi))
             assessment.start_execution_activity("VLO-Harvester", "0000-0002-5228-1970")
             xpproc.set_context(file_name=str(cmdi))
             for metric in Preprocessor.get_metrics():
-                print(f'=> Using metric: {metric["metric_name"]} ({metric["metric_identifier"]}), modality: {metric["modality"]}, max_metric_score: {metric["max_score"]}')
-
+                bln_metric_hasresult = False
+                logger.info(f'=> Testing metric: {metric["metric_name"]} ({metric["metric_identifier"]}), modality: {metric["modality"]}, max_metric_score: {metric["max_score"]}')
+                # assessment.create_testresultset(metric["metric_identifier"])
                 for metric_test in metric["metric_tests"]:
-                    print(f'\t=> Test: {metric_test["metric_test_name"]}')
+                    logger.info(f'=> Test: {metric_test["metric_test_name"]}')
                     metric_tst_results: List[TestResult] = [] # Tst results
                     for metric_test_requirement in metric_test["metric_test_requirements"]:
                         if metric_test_requirement["test"].startswith("xpath:"):  # 4: In Xpath handler...
                             # reset results to None
                             result = None
                             xpath_tst = metric_test_requirement["test"].split("xpath:", 1)[1]
-                            print(f'\t\t=> Requirement test: {xpath_tst}')
-                            print(f'\t\t=> Test requirement modality = {metric_test_requirement["modality"]}')
+                            logger.debug(f'=> Requirement test: {xpath_tst}')
+                            logger.debug(f'=> Test requirement modality = {metric_test_requirement["modality"]}')
                             declaration_list = []
                             declarations =''
                             if metric_test_requirement.get("variables", False):
                                 for varia in metric_test_requirement.get("variables"):
                                     var_name = varia.split("=", 1)[0]
                                     var_val = varia.split("=", 1)[1]
-                                    print(f'\t\t\t=> Var name={var_name}, value={var_val}')
+                                    logger.info(f'=> Var name={var_name}, value={var_val}')
                                     varproc = proc.new_xpath_processor()
                                     if '$RECORDPATH' in var_val: # TODO: RECORDPATH variable must be known by the caller. Find a way to make this generic.
                                         varproc.declare_variable('RECORDPATH')
@@ -122,7 +134,7 @@ def main():
                             try: # Looks like the parser might still print a java.io.IOException, that cannot be caught: FODC0002  I/O error reported by XML parser processing https://curation.clarin.eu/download/profile/clarin_eu_cr1_p_1650879720846. Caused by java.io.IOException: Server returned HTTP response code: 500 for URL: (...)
                                 result = xpproc.run_query_to_value(encoding="UTF-8")
                             except (RuntimeError, BaseException, PySaxonApiError) as error:
-                                print("\t\tError executing Xpath test:", xpath_tst)
+                                logger.error(f"Error executing Xpath test: {xpath_tst}")
                             # print("\t\tTEST Result:", result)
                             # print("\t\tTEST Modality:", Modality[metric_test['metric_test_requirements'][0]['modality'].upper()])
                             # print("\t\tTEST Max. SCORE:", metric_test["metric_test_score"])
@@ -130,9 +142,13 @@ def main():
                                 test_result = get_test_result(result, Modality[metric_test['metric_test_requirements'][0]['modality'].upper()], metric_test["metric_test_score"], metric_test["metric_test_identifier"])
                                 metric_tst_results.append(test_result)
                                 print ('\t\t', test_result)
+                                if not bln_metric_hasresult: assessment.create_testresultset(metric["metric_identifier"])
+                                bln_metric_hasresult = True
                                 assessment.add_testresult(test_result)
+                                assessment.add_result_to_set(metric["metric_identifier"], test_result)
+
             assessment.stop_execution_activity()
-            print(assessment)
+            logger.info(assessment)
                             # if result:
                             #     for i in range(result.size):
                             #         print(result.item_at(i).get_string_value())

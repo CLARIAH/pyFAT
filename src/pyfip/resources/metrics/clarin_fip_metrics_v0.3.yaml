@@ -208,13 +208,13 @@ metrics:
     modality: any
     max_score: 1
     metric_tests:
-      - metric_test_identifier: CLFIP-F4-M1D-1
+      - metric_test_identifier: CLFIP-A1_1-M1D-1
         metric_test_name: "all data identifiers use HTTPS"
         metric_test_score: 1
         metric_test_requirements:
           - test: "xpath:empty(//cmd:ResourceProxy[cmd:ResourceType='Resource']/cmd:ResourceRef[not(starts-with(.,'https://') or starts-with(.,'doi:') or starts-with(.,'hdl:'))])"
             modality: all
-      - metric_test_identifier: CLFIP-F4-M1D-2
+      - metric_test_identifier: CLFIP-A1_1-M1D-2
         metric_test_name: "some data identifiers use HTTPS"
         metric_test_score: 1
         metric_test_requirements:

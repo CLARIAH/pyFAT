@@ -21,9 +21,13 @@ class FipAssessment(object):
         self.g.add((result, self.prov.wasDerivedFrom, self.fex.assessedResource))
         self.g.add((result, self.prov.generatedAtTime, Literal(datetime.now(), datatype=XSD.dateTime)))
         self.g.add((result, self.ftr.status, Literal(testresult.success, datatype=XSD.boolean)))
-        # Add completion: This smells like maturity...
-        # Percentage value of completion of a test result for a given resource. For example, if the test passes, completion is expected to be 1. Otherwise, completion is a value 0..1
+        # Add completion: This smells like maturity:
+        # "Percentage value of completion of a test result for a given resource. For example, if the test passes, completion is expected to be 1. Otherwise, completion is a value 0..1"
         self.g.add((result, self.ftr.completion, Literal(testresult.score, datatype=XSD.decimal)))
+
+        # Add the test result to the appropriate result set:
+
+
 
     def set_assessedresource(self, resource: str):
         assessedResource = self.fex.assessedResource
@@ -46,6 +50,18 @@ class FipAssessment(object):
 
     def stop_execution_activity(self):
         self.g.add((self.fex.pyFatExecution, self.prov.endedAtTime, Literal(datetime.now(), datatype=XSD.dateTime)))
+
+    def create_testresultset(self, metric_id):
+        resultset = self.fex[metric_id]
+        self.g.add((resultset, RDF.type, self.ftr.TestResultSet))
+        self.g.add((resultset, self.prov.used, self.fex.assessedResource))
+        self.g.add((resultset, self.prov.wasDerivedFrom, self.fex.assessedResource))
+        # self.g.add((resultset, prov.hadMember, result1))
+        self.g.add((resultset, self.prov.wasGeneratedBy, self.fex.pyFatExecution))
+
+    def add_result_to_set(self, metric_id, testresult):
+        self.g.add((self.fex[metric_id], self.prov.hadMember, self.fex[testresult.testid]))
+
 
     # def __new__(cls, *args, **kwargs):
     #     print("1. Create a new instance of FairTestResult.")
