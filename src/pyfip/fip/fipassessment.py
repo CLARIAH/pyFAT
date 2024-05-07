@@ -28,7 +28,6 @@ class FipAssessment(object):
         # Add the test result to the appropriate result set:
 
 
-
     def set_assessedresource(self, resource: str):
         assessedResource = self.fex.assessedResource
         self.g.add((assessedResource, RDF.type, self.prov.Entity))
@@ -51,9 +50,12 @@ class FipAssessment(object):
     def stop_execution_activity(self):
         self.g.add((self.fex.pyFatExecution, self.prov.endedAtTime, Literal(datetime.now(), datatype=XSD.dateTime)))
 
-    def create_testresultset(self, metric_id):
+    def create_testresultset(self, metric_id, metric_name):
         resultset = self.fex[metric_id]
         self.g.add((resultset, RDF.type, self.ftr.TestResultSet))
+        self.g.add((resultset, self.sorg.identifier, Literal(metric_id)))
+        self.g.add((resultset, self.sorg.name, Literal(metric_name)))
+        self.g.add((resultset, self.sorg.license, Literal("https://spdx.org/licenses/WTFPL.html")))
         self.g.add((resultset, self.prov.used, self.fex.assessedResource))
         self.g.add((resultset, self.prov.wasDerivedFrom, self.fex.assessedResource))
         # self.g.add((resultset, prov.hadMember, result1))
@@ -94,7 +96,8 @@ class FipAssessment(object):
 
 
     def __repr__(self) -> str:
-        return f"{type(self).__name__}\n" + self.g.serialize(format='ttl')
+        return self.g.serialize(format='ttl')
+
 def main():
     pyproject_toml = toml.load(str("../../../pyproject.toml"))
     rdf_test_result = FipAssessment(pyproject_toml['tool']['poetry']['name'], pyproject_toml['tool']['poetry']['version'], pyproject_toml['project']['urls']['Repository'])

@@ -139,7 +139,7 @@ def main():
                                 test_result = get_test_result(result, Modality[metric_test['metric_test_requirements'][0]['modality'].upper()], metric_test["metric_test_score"], metric_test["metric_test_identifier"])
                                 metric_tst_results.append(test_result)
                                 # print('\t\t', test_result)
-                                if not bln_metric_hasresult: assessment.create_testresultset(metric["metric_identifier"])
+                                if not bln_metric_hasresult: assessment.create_testresultset(metric["metric_identifier"], metric["metric_name"])
                                 bln_metric_hasresult = True
                                 assessment.add_testresult(test_result)
                                 assessment.add_result_to_set(metric["metric_identifier"], test_result)
