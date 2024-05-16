@@ -7,26 +7,27 @@ from rdflib.namespace import RDF, XSD
 from pyfip.fip.testresult import TestResult
 
 
-class FipAssessment(object):
+class FipAssessmentOutput(object):
+    """
+    A class that implements the FAIR assessment output specification:
+    https://ostrails.github.io/FAIR_assessment_output_specification/release/0.0.1/index-en.html
+    """
 
     def add_testresult(self, testresult: TestResult):
-        # Add triples result
+        # Add result triples
         result = self.fex[testresult.testid]
         self.g.add((result, RDF.type, self.ftr.TestResult))
         self.g.add((result, self.sorg.identifier, Literal(testresult.testid)))
-        self.g.add((result, self.sorg.name, Literal("TODO")))
+        self.g.add((result, self.sorg.name, Literal(testresult.testname)))
         self.g.add((result, self.ftr.isDefinedBy, URIRef("http://example.org/foops/test/2")))
-        self.g.add((result, self.sorg.description, Literal("TODO")))
-        self.g.add((result, self.ftr.log, Literal("""TODO: LOG indicating the operations for test 2 undertaken goes here.""")))
+        self.g.add((result, self.sorg.description, Literal(testresult.testvalue)))
+        self.g.add((result, self.ftr.log, Literal(testresult.log)))
         self.g.add((result, self.prov.wasDerivedFrom, self.fex.assessedResource))
         self.g.add((result, self.prov.generatedAtTime, Literal(datetime.now(), datatype=XSD.dateTime)))
         self.g.add((result, self.ftr.status, Literal(testresult.success, datatype=XSD.boolean)))
         # Add completion: This smells like maturity:
         # "Percentage value of completion of a test result for a given resource. For example, if the test passes, completion is expected to be 1. Otherwise, completion is a value 0..1"
         self.g.add((result, self.ftr.completion, Literal(testresult.score, datatype=XSD.decimal)))
-
-        # Add the test result to the appropriate result set:
-
 
     def set_assessedresource(self, resource: str):
         assessedResource = self.fex.assessedResource
@@ -64,7 +65,6 @@ class FipAssessment(object):
     def add_result_to_set(self, metric_id, testresult):
         self.g.add((self.fex[metric_id], self.prov.hadMember, self.fex[testresult.testid]))
 
-
     # def __new__(cls, *args, **kwargs):
     #     print("1. Create a new instance of FairTestResult.")
     #     return super().__new__(cls)
@@ -83,7 +83,7 @@ class FipAssessment(object):
         # Explicitly name our prefixes:
         self.g.namespace_manager.bind('prov', self.prov)
         self.g.namespace_manager.bind('ftr', self.ftr)
-        self.g.namespace_manager.bind('sorg', self.sorg)
+        self.g.namespace_manager.bind('schema', self.sorg)
         self.g.namespace_manager.bind('fex', self.fex)
         self.g.namespace_manager.bind('xsd', self.xsd)
 
@@ -94,14 +94,15 @@ class FipAssessment(object):
         self.g.add((app_software, self.sorg.softwareVersion, Literal(version)))  # , datatype=XSD.string outputs: sorg:softwareVersion "0.1.1"^^xsd:string ;
         self.g.add((app_software, self.sorg.name, Literal(appname)))
 
-
     def __repr__(self) -> str:
         return self.g.serialize(format='ttl')
 
+
 def main():
     pyproject_toml = toml.load(str("../../../pyproject.toml"))
-    rdf_test_result = FipAssessment(pyproject_toml['tool']['poetry']['name'], pyproject_toml['tool']['poetry']['version'], pyproject_toml['project']['urls']['Repository'])
+    rdf_test_result = FipAssessmentOutput(pyproject_toml['tool']['poetry']['name'], pyproject_toml['tool']['poetry']['version'], pyproject_toml['project']['urls']['Repository'])
     print(rdf_test_result)
+
 
 if __name__ == '__main__':
     main()

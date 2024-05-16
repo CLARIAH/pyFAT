@@ -9,7 +9,7 @@ import toml
 from dynaconf import Dynaconf
 from saxonche import PySaxonProcessor, PyXdmValue, PySaxonApiError
 
-from pyfip.fip.fipassessment import FipAssessment
+from pyfip.fip.fipassessmentoutput import FipAssessmentOutput
 from pyfip.fip.preprocessor import Preprocessor
 from pyfip.fip.testresult import TestResult
 
@@ -20,7 +20,7 @@ class Modality(StrEnum):
     ALL = auto()
 
 
-def get_test_result(result_list: PyXdmValue, modality: Modality, max_tst_score: int, test_id: str) -> TestResult:
+def get_test_result(result_list: PyXdmValue, modality: Modality, max_tst_score: int, test_id: str, testname: str, testvalue: str, log: str) -> TestResult:
     if result_list:
         for item in result_list:
             # print("\t\tSTR_VALUE:", item.string_value)
@@ -28,18 +28,18 @@ def get_test_result(result_list: PyXdmValue, modality: Modality, max_tst_score: 
             # print("\t\tBLN_VALUE:", item.boolean_value)
             if item.string_value in ["true", "false"]:  # TODO: No method to determine the Python native type: You must cast/ask for a type...
                 if modality is Modality.ANY:
-                    for item in result_list:
-                        if item.boolean_value:
-                            return TestResult(True, max_tst_score, test_id)
-                    return TestResult(False, 0)
+                    for res in result_list:
+                        if res.boolean_value:
+                            return TestResult(True, max_tst_score, test_id, testname, testvalue, log)
+                    return TestResult(False, 0, test_id, testname, testvalue, log)
                 elif modality is Modality.ALL:
-                    for item in result_list:
-                        if not item.boolean_value:
-                            return TestResult(False, 0, test_id)
-                    return TestResult(True, max_tst_score, test_id)
+                    for res in result_list:
+                        if not res.boolean_value:
+                            return TestResult(False, 0, test_id, testname, testvalue, log)
+                    return TestResult(True, max_tst_score, test_id, testname, testvalue, log)
             else:  # Alternative is a SINGLE number: Value should be between 0 and 1. Calculate the test score accordingly
-                return TestResult(True, round(item.double_value * max_tst_score, 1), test_id)
-    return TestResult(True, 0, test_id)
+                return TestResult(True, round(item.double_value * max_tst_score, 1), test_id, testname, testvalue, log)
+    return TestResult(True, 0, test_id, testname, testvalue, log)
 
 
 def get_metric_result(tst_results: List[TestResult], modality: Modality, max_score: int) -> TestResult:
@@ -64,16 +64,19 @@ def get_metric_result(tst_results: List[TestResult], modality: Modality, max_sco
 
 def main():
     # Make sure to start the solrproxy.py tool to bypass basicAuth.
+    # Load settings config:
     settings = Dynaconf(settings_files=["conf/settings.toml"], secrets=["conf/.secrets.toml"], environments=True, default_env="default", load_dotenv=True)
 
-    file_handler = logging.FileHandler(filename=settings.LOG_FILE )
-    file_handler.setLevel(logging.INFO)
+    # Get logging in place:
+    logfile_handler = logging.FileHandler(filename=settings.LOG_FILE )
+    logfile_handler.setLevel(logging.INFO)
     stdout_handler = logging.StreamHandler(stream=sys.stdout)
     stdout_handler.setFormatter(logging.Formatter(settings.log_format))
-    handlers = [file_handler, stdout_handler]
+    handlers = [logfile_handler, stdout_handler]
     logging.basicConfig(level=settings.LOG_LEVEL, format=settings.LOG_FORMAT, handlers=handlers, datefmt=settings.LOG_DATE_FORMAT)
     logger = logging.getLogger('pyfat')
 
+    # Process/parse Metrics definition
     preproc = Preprocessor(settings)
     preproc.parse_metrics_yaml()
 
@@ -84,14 +87,15 @@ def main():
         logger.debug(f"Saxon processor: {proc.version}")
         xpproc = proc.new_xquery_processor()
 
-        for k, v in Preprocessor.get_nspace_map().items():
+        # Load our namespaces into the Saxon processor:
+        for k, v in Preprocessor.get_nspace_map().items(): # namespaces are difined in a seperate namespaces.json. Could be included in the Metrics file as well
             xpproc.declare_namespace(k, v)
         xpproc.set_cwd(os.getcwd())
 
         for cmdi in resources.files("tests.resources.cmdi").iterdir():
 
             pyproject_toml = toml.load(str("../../pyproject.toml"))
-            assessment = FipAssessment(pyproject_toml['tool']['poetry']['name'], pyproject_toml['tool']['poetry']['version'], pyproject_toml['project']['urls']['Repository'])
+            assessment = FipAssessmentOutput(pyproject_toml['tool']['poetry']['name'], pyproject_toml['tool']['poetry']['version'], pyproject_toml['project']['urls']['Repository'])
 
             logger.debug(f'\nCMDI record => {str(cmdi)}')
             assessment.set_assessedresource(str(cmdi))
@@ -103,10 +107,12 @@ def main():
                 for metric_test in metric["metric_tests"]:
                     logger.debug(f'=> Test: {metric_test["metric_test_name"]}')
                     metric_tst_results: List[TestResult] = []  # Tst results
+
                     for metric_test_requirement in metric_test["metric_test_requirements"]:
-                        if metric_test_requirement["test"].startswith("xpath:"):  # 4: In Xpath handler...
+                        if metric_test_requirement["test"].startswith("xpath:"):  # 4: In Xpath handler... TODO: implement logic for different handlers (i.e: xpath, Python, etc.)
                             # reset results...
                             result = None
+                            log = f'Test modality = {metric_test_requirement["modality"]}'
                             xpath_tst = metric_test_requirement["test"].split("xpath:", 1)[1]
                             logger.debug(f'=> Requirement test: {xpath_tst}')
                             logger.debug(f'=> Test requirement modality = {metric_test_requirement["modality"]}')
@@ -128,15 +134,19 @@ def main():
                                 declarations += ";"
                             # print ("\t\tDeclare ext. vars:", declarations)
                             xpproc.set_query_content(f"{declarations} {xpath_tst}")
+                            # Add declarations to the output Log:
+                            if declarations: log = log + "\n" + declarations
+
                             try:  # Looks like the parser might still print a java.io.IOException, that cannot be caught: FODC0002  I/O error reported by XML parser processing https://curation.clarin.eu/download/profile/clarin_eu_cr1_p_1650879720846. Caused by java.io.IOException: Server returned HTTP response code: 500 for URL: (...)
                                 result = xpproc.run_query_to_value(encoding="UTF-8")
-                            except (RuntimeError, BaseException, PySaxonApiError) as error:
-                                logger.error(f"Error executing Xpath test: {xpath_tst}")
-                            # print("\t\tTEST Result:", result)
+                            except (RuntimeError, BaseException, PySaxonApiError) as err:
+                                msg = f"Error executing Xpath test: {xpath_tst}: {err}"
+                                logger.error(msg)
+                                # print("\t\tTEST Result:", result)
                             # print("\t\tTEST Modality:", Modality[metric_test['metric_test_requirements'][0]['modality'].upper()])
                             # print("\t\tTEST Max. SCORE:", metric_test["metric_test_score"])
-                            if result:  # None result: Do not include this result in the test => TODO: take account for None results in the end/total assessment score. For now just skip them.
-                                test_result = get_test_result(result, Modality[metric_test['metric_test_requirements'][0]['modality'].upper()], metric_test["metric_test_score"], metric_test["metric_test_identifier"])
+                            if result:  # None result: Do not include this result in the test => TODO: take account for None results (i.e: indeterminate) in the end/total assessment score. For now just skip them.
+                                test_result = get_test_result(result, Modality[metric_test['metric_test_requirements'][0]['modality'].upper()], metric_test["metric_test_score"], metric_test["metric_test_identifier"], metric_test["metric_test_name"], metric_test_requirement["test"], log)
                                 metric_tst_results.append(test_result)
                                 # print('\t\t', test_result)
                                 if not bln_metric_hasresult: assessment.create_testresultset(metric["metric_identifier"], metric["metric_name"])
