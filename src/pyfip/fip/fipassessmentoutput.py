@@ -9,7 +9,7 @@ from pyfip.fip.testresult import TestResult
 
 class FipAssessmentOutput(object):
     """
-    A class that implements the FAIR assessment output specification:
+    A class that implements a FAIR assessment output specification:
     https://ostrails.github.io/FAIR_assessment_output_specification/release/0.0.1/index-en.html
     """
 
@@ -25,7 +25,7 @@ class FipAssessmentOutput(object):
         self.g.add((result, self.prov.wasDerivedFrom, self.fex.assessedResource))
         self.g.add((result, self.prov.generatedAtTime, Literal(datetime.now(), datatype=XSD.dateTime)))
         self.g.add((result, self.ftr.status, Literal(testresult.success, datatype=XSD.boolean)))
-        # Add completion: This smells like maturity:
+        # Add completion: This smells like FAIR "maturity":
         # "Percentage value of completion of a test result for a given resource. For example, if the test passes, completion is expected to be 1. Otherwise, completion is a value 0..1"
         self.g.add((result, self.ftr.completion, Literal(testresult.score, datatype=XSD.decimal)))
 
@@ -46,7 +46,6 @@ class FipAssessmentOutput(object):
         self.g.add((pyfatexecution, self.ftr.usedAPI, Literal("https://pyfat.huc.knaw.nl/assessOntology/", datatype=XSD.anyURI)))
         self.g.add((pyfatexecution, self.prov.wasStartedBy, self.fex.agent))
         self.g.add((pyfatexecution, self.prov.startedAtTime, Literal(datetime.now(), datatype=XSD.dateTime)))
-        # self.g.add((pyfatexecution, self.prov.endedAtTime, Literal("2024-05-02T03:16:24Z", datatype=XSD.dateTime)))
 
     def stop_execution_activity(self):
         self.g.add((self.fex.pyFatExecution, self.prov.endedAtTime, Literal(datetime.now(), datatype=XSD.dateTime)))
@@ -59,15 +58,10 @@ class FipAssessmentOutput(object):
         self.g.add((resultset, self.sorg.license, Literal("https://spdx.org/licenses/WTFPL.html")))
         self.g.add((resultset, self.prov.used, self.fex.assessedResource))
         self.g.add((resultset, self.prov.wasDerivedFrom, self.fex.assessedResource))
-        # self.g.add((resultset, prov.hadMember, result1))
         self.g.add((resultset, self.prov.wasGeneratedBy, self.fex.pyFatExecution))
 
     def add_result_to_set(self, metric_id, testresult):
         self.g.add((self.fex[metric_id], self.prov.hadMember, self.fex[testresult.testid]))
-
-    # def __new__(cls, *args, **kwargs):
-    #     print("1. Create a new instance of FairTestResult.")
-    #     return super().__new__(cls)
 
     def __init__(self, appname: str, version: str, scm: str):
         # Define namespaces
