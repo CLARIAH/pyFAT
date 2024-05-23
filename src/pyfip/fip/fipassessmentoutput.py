@@ -1,10 +1,12 @@
+import uuid
 from datetime import datetime
+from typing import List
 
 import toml
 from rdflib import Graph, Namespace, Literal, URIRef
 from rdflib.namespace import RDF, XSD
 
-from pyfip.fip.testresult import TestResult
+from pyfip.fip.testresult import TestResult, MetricResult
 
 
 class FipAssessmentOutput(object):
@@ -15,19 +17,19 @@ class FipAssessmentOutput(object):
 
     def add_testresult(self, testresult: TestResult):
         # Add result triples
-        result = self.fex[testresult.testid]
-        self.g.add((result, RDF.type, self.ftr.TestResult))
-        self.g.add((result, self.sorg.identifier, Literal(testresult.testid)))
-        self.g.add((result, self.sorg.name, Literal(testresult.testname)))
-        self.g.add((result, self.ftr.isDefinedBy, URIRef("http://example.org/foops/test/2")))
-        self.g.add((result, self.sorg.description, Literal(testresult.testvalue)))
-        self.g.add((result, self.ftr.log, Literal(testresult.log)))
-        self.g.add((result, self.prov.wasDerivedFrom, self.fex.assessedResource))
-        self.g.add((result, self.prov.generatedAtTime, Literal(datetime.now(), datatype=XSD.dateTime)))
-        self.g.add((result, self.ftr.status, Literal(testresult.success, datatype=XSD.boolean)))
+        tstresult = self.fex[testresult.testid]
+        self.g.add((tstresult, RDF.type, self.ftr.TestResult))
+        self.g.add((tstresult, self.sorg.identifier, Literal(testresult.testid)))
+        self.g.add((tstresult, self.sorg.name, Literal(testresult.testname)))
+        self.g.add((tstresult, self.ftr.isDefinedBy, URIRef(f"https://pyfat.huc.knaw.nl/api/v1/metric/{testresult.metricid}")))
+        self.g.add((tstresult, self.sorg.description, Literal(testresult.testvalue)))
+        self.g.add((tstresult, self.ftr.log, Literal(testresult.log)))
+        self.g.add((tstresult, self.prov.wasDerivedFrom, self.fex.assessedResource))
+        self.g.add((tstresult, self.prov.generatedAtTime, Literal(testresult.gentime, datatype=XSD.dateTime)))
+        self.g.add((tstresult, self.ftr.status, Literal(testresult.success, datatype=XSD.boolean)))
         # Add completion: This smells like FAIR "maturity":
         # "Percentage value of completion of a test result for a given resource. For example, if the test passes, completion is expected to be 1. Otherwise, completion is a value 0..1"
-        self.g.add((result, self.ftr.completion, Literal(testresult.score, datatype=XSD.decimal)))
+        self.g.add((tstresult, self.ftr.completion, Literal(testresult.score, datatype=XSD.decimal)))
 
     def set_assessedresource(self, resource: str):
         assessedResource = self.fex.assessedResource
@@ -43,25 +45,51 @@ class FipAssessmentOutput(object):
         pyfatexecution = self.fex.pyFatExecution
         self.g.add((pyfatexecution, RDF.type, self.ftr.TestExecutionActivity))
         self.g.add((pyfatexecution, self.prov.used, self.fex.assessedResource))
-        self.g.add((pyfatexecution, self.ftr.usedAPI, Literal("https://pyfat.huc.knaw.nl/assessOntology/", datatype=XSD.anyURI)))
+        self.g.add((pyfatexecution, self.ftr.usedAPI, Literal("https://pyfat.huc.knaw.nl/api/v1/", datatype=XSD.anyURI)))
         self.g.add((pyfatexecution, self.prov.wasStartedBy, self.fex.agent))
         self.g.add((pyfatexecution, self.prov.startedAtTime, Literal(datetime.now(), datatype=XSD.dateTime)))
 
-    def stop_execution_activity(self):
+    # def stop_execution_activity(self, metricresults: List[MetricResult], metrics_version: str, metrics_created_by: str):
+    #     self.g.add((self.fex.pyFatExecution, self.prov.endedAtTime, Literal(datetime.now(), datatype=XSD.dateTime)))
+    #     self.create_assessment_rubric(metricresults, metrics_version, metrics_created_by)
+
+    def create_assessment_rubric(self, metricresults: List[MetricResult], metrics_version: str, metrics_created_by: str):
+        # Stop execution time: We're finished
         self.g.add((self.fex.pyFatExecution, self.prov.endedAtTime, Literal(datetime.now(), datatype=XSD.dateTime)))
 
-    def create_testresultset(self, metric_id, metric_name):
-        resultset = self.fex[metric_id]
-        self.g.add((resultset, RDF.type, self.ftr.TestResultSet))
-        self.g.add((resultset, self.sorg.identifier, Literal(metric_id)))
-        self.g.add((resultset, self.sorg.name, Literal(metric_name)))
-        self.g.add((resultset, self.sorg.license, Literal("https://spdx.org/licenses/WTFPL.html")))
-        self.g.add((resultset, self.prov.used, self.fex.assessedResource))
-        self.g.add((resultset, self.prov.wasDerivedFrom, self.fex.assessedResource))
-        self.g.add((resultset, self.prov.wasGeneratedBy, self.fex.pyFatExecution))
+        str_uuid = str(uuid.uuid4())
+        rubricset = self.cln[str_uuid]
+        self.g.add((rubricset, RDF.type, self.cln.AssessmentRubricResultSet))
+        self.g.add((rubricset, self.sorg.identifier, Literal(str_uuid)))
+        self.g.add((rubricset, self.sorg.license, Literal("https://spdx.org/licenses/WTFPL.html")))
+        self.g.add((rubricset, self.prov.wasDerivedFrom, self.fex.assessedResource))
+        self.g.add((rubricset, self.prov.wasGeneratedBy, self.fex.pyFatExecution))
+        self.g.add((rubricset, self.prov.used, self.fex.assessedResource))
+        self.g.add((rubricset, self.ftr.isDefinedBy, URIRef(f"https://pyfat.huc.knaw.nl/api/v1/metrics/v{metrics_version}")))
+        self.g.add((rubricset, self.sorg.name, Literal(metrics_created_by)))
 
-    def add_result_to_set(self, metric_id, testresult):
-        self.g.add((self.fex[metric_id], self.prov.hadMember, self.fex[testresult.testid]))
+        assessment_score = 0
+        for metric in metricresults:
+            self.g.add((rubricset, self.prov.hadMember,self.fex[metric.metricid]))
+
+        self.g.add((rubricset, self.ftr.status, Literal("True", datatype=XSD.boolean))) #TODO: Determine Pass or Fail
+        # Add completion: This smells like FAIR "maturity":
+        # "Percentage value of completion of a test result for a given resource. For example, if the test passes, completion is expected to be 1. Otherwise, completion is a value 0..1"
+        self.g.add((rubricset, self.ftr.completion, Literal(4, datatype=XSD.decimal))) #TODO: Calculate overall score
+
+
+    def create_testresultset(self, metric_id, metric_name):
+        testresultset = self.fex[metric_id]
+        self.g.add((testresultset, RDF.type, self.ftr.TestResultSet))
+        self.g.add((testresultset, self.sorg.identifier, Literal(metric_id)))
+        self.g.add((testresultset, self.sorg.name, Literal(metric_name)))
+        self.g.add((testresultset, self.sorg.license, Literal("https://spdx.org/licenses/WTFPL.html")))
+        self.g.add((testresultset, self.prov.used, self.fex.assessedResource))
+        self.g.add((testresultset, self.prov.wasDerivedFrom, self.fex.assessedResource))
+        self.g.add((testresultset, self.prov.wasGeneratedBy, self.fex.pyFatExecution))
+
+    def add_result_to_set(self, metric_id, testid):
+        self.g.add((self.fex[metric_id], self.prov.hadMember, self.fex[testid]))
 
     def __init__(self, appname: str, version: str, scm: str):
         # Define namespaces
@@ -70,6 +98,7 @@ class FipAssessmentOutput(object):
         self.sorg = Namespace("https://schema.org/")
         self.fex = Namespace("http://example.org/fair/")
         self.xsd = Namespace("http://www.w3.org/2001/XMLSchema#")
+        self.cln = Namespace("http://www.clarin.eu/ns/rubric#")
 
         # Create the graph
         self.g = Graph()
@@ -80,16 +109,25 @@ class FipAssessmentOutput(object):
         self.g.namespace_manager.bind('schema', self.sorg)
         self.g.namespace_manager.bind('fex', self.fex)
         self.g.namespace_manager.bind('xsd', self.xsd)
+        self.g.namespace_manager.bind('cln', self.cln)
 
         app_software = self.fex.pyFAT
 
         self.g.add((app_software, RDF.type, self.sorg.SoftwareApplication))
         self.g.add((app_software, self.sorg.url, Literal(scm)))
-        self.g.add((app_software, self.sorg.softwareVersion, Literal(version)))  # , datatype=XSD.string outputs: sorg:softwareVersion "0.1.1"^^xsd:string ;
+        self.g.add((app_software, self.sorg.softwareVersion, Literal(version, datatype=XSD.string)))  # , datatype=XSD.string outputs: sorg:softwareVersion "0.1.1"^^xsd:string ;
         self.g.add((app_software, self.sorg.name, Literal(appname)))
 
     def __repr__(self) -> str:
         return self.g.serialize(format='ttl')
+
+
+    def create_test_results_and_set(self, metricresult: MetricResult): #TODO: Calculate metric score and pass/fail for each TestResultSet
+        # Add the testResult nodes to the KG:
+        self.create_testresultset(metricresult.metricid, metricresult.metricname)
+        for tstresult in  metricresult.testresults:
+            self.add_testresult(tstresult)
+            self.add_result_to_set(metricresult.metricid, tstresult.testid)
 
 
 def main():

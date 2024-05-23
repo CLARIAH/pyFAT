@@ -21,6 +21,7 @@ idutils = "^1.2.1"
 saxonche = "^12.4.2"
 rdflib = "^7.0.0"
 toml = "^0.10.2"
+uuid = "^1.30"
 
 
 [build-system]

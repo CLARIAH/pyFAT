@@ -32,10 +32,15 @@ class Preprocessor(object):
             cls._metrics_list = metrics_specs['metrics']
             cls._metrics_total = len(cls._metrics_list)
             cls._metrics_version = metrics_specs['config']['metric_version']
+            cls._metrics_created_by = metrics_specs['created_by']
 
     @classmethod
     def get_total_metrics(cls) -> int:
         return cls._metrics_total
+
+    @classmethod
+    def get_metrics_created_by(cls) -> str:
+        return cls._metrics_created_by
 
     @classmethod
     def get_metrics_version(cls) -> str:

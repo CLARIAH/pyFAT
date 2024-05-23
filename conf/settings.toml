@@ -3,9 +3,8 @@ dynaconf_env="DEFAULT"
 fastapi_title = ""
 fastapi_description = ""
 fastapi_summary = ""
-log_file = "@format {env[BASE_DIR]}/logs/pyfat.log"
-log_level = 10
-log_format = "%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s"
+loggers = [{"name"="pyfat", "log_file"="../../logs/pyfat.log", "log_level"=10, "log_format" = "%(asctime)s %(levelname)s: %(message)s", "log_date_format" = "%Y-%m-%d %H:%M:%S" }]
+#log_file = "@format {env[BASE_DIR]}/logs/pyfat.log"
 vlo_solr_url = 'http://localhost:8183/solr/vlo-index'
 metrics_file = "clarin_fip_metrics_v0.3.yaml"
 metrics_pckg = "pyfip.resources.metrics"
@@ -18,12 +17,6 @@ dynaconf_env="DEVELOPMENT"
 fastapi_title = ""
 fastapi_description = ""
 fastapi_summary = ""
-#log_file = "@format {env[BASE_DIR]}/logs/pyfat.log"
-log_file = "../../logs/pyfat.log"
-log_level = 10
-log_format = "%(asctime)s %(levelname)s: %(message)s"
-log_format_full = "%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s"
-log_date_format = "%Y-%m-%d %H:%M:%S"
 vlo_solr_url = 'http://localhost:8183/solr/vlo-index'
 
 
