@@ -50,8 +50,9 @@ results = True
 start_idx = 0
 batch_size = 10
 
-filter_queries = ['_harvesterRoot:(NDE*)']
-query = "*:*"
+# filter_queries = ['_harvesterRoot:(NDE*)']
+filter_queries = []
+query = "_fileName:*albac.xml"
 
 while results:
     results = _get_results(query, fq=filter_queries, rows=batch_size, start=start_idx)
@@ -59,12 +60,32 @@ while results:
     start_idx = start_idx + batch_size
     for result in results:
         print("Name: {0}.".format(result['name'][0]))
-        # print("\t {0}.".format(result['description'][0]))
+        print(result)
 
     # Stop after first 10 results...
     if start_idx >= 10:
         results = False
         print(emoji.emojize(':construction:'), "Stopped printing results...")
+
+
+
+import urllib.request
+
+url = "http://localhost:8183/solr/vlo-index/select?indent=true&q.op=OR&q="+query
+
+auth_user="user_admin"
+auth_passwd="docker_secret"
+
+passman = urllib.request.HTTPPasswordMgrWithDefaultRealm()
+passman.add_password(None, url, auth_user, auth_passwd)
+authhandler = urllib.request.HTTPBasicAuthHandler(passman)
+opener = urllib.request.build_opener(authhandler)
+urllib.request.install_opener(opener)
+
+res = urllib.request.urlopen(url)
+res_body = res.read()
+print(res_body.decode('utf-8'))
+
 
 # How you'd index data.
 # solr.add([

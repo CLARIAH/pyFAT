@@ -1,11 +1,11 @@
-# LIST OF CLARIN-FIP METRICS AND THEIR RESPONSE OUTPUT FORMATS
 config:
   metric_specification: https://docs.google.com/spreadsheets/d/1hY2zPmFDZ6aIlY-MupK6gvynQZucOxikFDgv5YWxFyQ
   metric_version: 0.3
-  # WS: namespaces loaded from external namespaces.json file. May be included here in the tests
+  # namespaces loaded from external namespaces.json file. May be included here in the metrics like this:
 #  metric_namespaces:
 #    cmd: http://www.clarin.eu/cmd/1
-#    cmdp: http://www.clarin.eu/cmd/1/profiles/clarin.eu:cr1:p_1288172614026
+#   cmdp: http://www.clarin.eu/cmd/1/profiles/clarin.eu:cr1:p_1288172614026
+#     js: http://www.w3.org/2005/xpath-functions
 
 metrics:
   - metric_identifier: CLFIP-F1-01M
@@ -15,7 +15,7 @@ metrics:
     fair_principle: F1
     target: Metadata
     modality: any
-    max_score: 1
+    max_score: 2
     metric_tests:
       - metric_test_identifier: CLFIP-F1-01M-1
         metric_test_name: "Check to see if the selflink is a handle"
@@ -25,7 +25,7 @@ metrics:
             modality: all
       - metric_test_identifier: CLFIP-F1-01M-2
         metric_test_name: "Check to see if the selflink is a doi"
-        metric_test_score: 0.5
+        metric_test_score: 0.25
         metric_test_requirements:
           - test: "xpath:starts-with(//cmd:MdSelfLink, 'doi:')"
             modality: all
@@ -43,7 +43,7 @@ metrics:
             modality: all
       - metric_test_identifier: CLFIP-F1-01M-5
         metric_test_name: "Check to see if the selflink is a HTTPS doi"
-        metric_test_score: 1
+        metric_test_score: 2
         metric_test_requirements:
           - test: "xpath:starts-with(//cmd:MdSelfLink, 'https://doi.org/10.') or starts-with(//cmd:MdSelfLink, 'https://dx.doi.org/10.')"
             modality: all
@@ -116,10 +116,16 @@ metrics:
     max_score: 3
     metric_tests:
       - metric_test_identifier: CLFIP-F2-01M-1
-        metric_test_name: "Get the facet coverage score of the used CMD profile"
+        metric_test_name: "Facet coverage score of the used CMD profile is larger than .2"
+        metric_test_score: 1
+        metric_test_requirements:
+          - test: "xpath:xs:decimal(doc(concat('https://curation.clarin.eu/download/profile/',replace(//cmd:MdProfile,'[^a-zA-Z0-9]','_')))/cmdProfileReport/facetReport/string(@score)) > 0.2 "
+            modality: all
+      - metric_test_identifier: CLFIP-F2-01M-2
+        metric_test_name: "Facet coverage score of the used CMD profile is larger than .8"
         metric_test_score: 3
         metric_test_requirements:
-          - test: "xpath:doc(concat('https://curation.clarin.eu/download/profile/',replace(//cmd:MdProfile,'[^a-zA-Z0-9]','_')))/cmdProfileReport/facetReport/string(@score)"
+          - test: "xpath:xs:decimal(doc(concat('https://curation.clarin.eu/download/profile/',replace(//cmd:MdProfile,'[^a-zA-Z0-9]','_')))/cmdProfileReport/facetReport/string(@score)) > 0.3"
             modality: all
 
   - metric_identifier: CLFIP-F3-01M
@@ -180,18 +186,18 @@ metrics:
     metric_description: "In which search engines are your datasets indexed?"
     fair_principle: F4
     target: Data
-    modality: any
-    max_score: 1
+    modality: all
+    max_score: 5
     metric_tests:
       - metric_test_identifier: CLFIP-F4-02D-1
         metric_test_name: "search data via a search service"
-        metric_test_score: 1
+        metric_test_score: 2
         metric_test_requirements:
           - test: "xpath:exists(//cmd:ResourceProxy[cmd:ResourceType='SearchService'])"
             modality: all
       - metric_test_identifier: CLFIP-F4-02D-2
         metric_test_name: "search data via a search page"
-        metric_test_score: 1
+        metric_test_score: 3
         metric_test_requirements:
           - test: "xpath:exists(//cmd:ResourceProxy[cmd:ResourceType='SearchPage'])"
             modality: all

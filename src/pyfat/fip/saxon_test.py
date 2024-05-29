@@ -48,11 +48,12 @@ with PySaxonProcessor(license=False) as proc:
     print(proc.version)
     xquery_processor = proc.new_xquery_processor()
     xdm_int_value = proc.make_integer_value(12)
-    # print(xdm_int_value)
+    print(xdm_int_value)
     xquery_processor.set_parameter('n', xdm_int_value)
 
-    result = xquery_processor.run_query_to_value(query_text='declare variable $n external; (1 to $n)!(. * .)')
-    print(result.size)
+    # result = xquery_processor.run_query_to_value(query_text='declare variable $n external; (1 to $n)!(. * .)')
+    result = xquery_processor.run_query_to_value(query_text='declare variable $n external; $n')
+    print(result)
 
 with PySaxonProcessor(license=False) as proc:
     print(proc.version)
@@ -99,7 +100,7 @@ with PySaxonProcessor(license=False) as proc:
     xp.set_context(xdm_item=node)
     item = xp.evaluate_single('//person[1]')
     if isinstance(item, PyXdmNode):
-        print(item.string_value)
+        print("PERSON[1]:",item.string_value)
 
     value = proc.make_double_value(3.5)
     print(value.primitive_type_name)
@@ -159,14 +160,19 @@ with PySaxonProcessor(license=False) as proc:
     print(proc.version)
     xpproc = proc.new_xpath_processor()
     xpproc.set_cwd(os.getcwd())
-    xpproc.set_context(file_name=str(resources.files("tests.resources.cmdi").joinpath("albac.xml")))
+    # xpproc.set_context(file_name=str(resources.files("tests.resources.cmdi").joinpath("albac.xml")))
+    xpproc.set_context(file_name=str(resources.files("tests.resources.cmdi").joinpath("example-md-instance-1_2.cmdi.xml")))
 
     xpproc.declare_namespace("cmd", "http://www.clarin.eu/cmd/1")
+    # result = xpproc.evaluate("matches(//cmd:MdSelfLink, '(hdl:\\s*|(?:https?://)?hdl\\.handle\\.net/)?([^/\\.]+(\\.[^/\\.]+)*/.*)$', 'i')")
     result = xpproc.evaluate("matches(//cmd:MdSelfLink, '10.\d{4,9}/[-._;()/:A-Z0-9]+$', 'i')")
+    #  '10.\d{4,9}/[-._;()/:A-Z0-9]+$'
+    #  'hdl:\s*|(?:https?://)?hdl\.handle\.net/)?([^/\.]+(\.[^/\.]+)*/.*)$'
+
 
     print("regex eval:", result)
 
-    xpproc.declare_namespace("cmd", "http://www.clarin.eu/cmd/1")
-    xpproc.set_parameter("f_A_1", proc.make_integer_value(23))
-    result = xpproc.evaluate("string-join((//cmd:MdCreator,$f_A_1 * 10),':')")
-    print(result)
+    # xpproc.declare_namespace("cmd", "http://www.clarin.eu/cmd/1")
+    # xpproc.set_parameter("f_A_1", proc.make_integer_value(23))
+    # result = xpproc.evaluate("string-join((//cmd:MdCreator,$f_A_1 * 10),':')")
+    # print(result)
