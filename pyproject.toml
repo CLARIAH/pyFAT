@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyFAT"
-version = "0.1.2"
+version = "0.1.3"
 description = "FAIR Implementation Profile for CLARIAH"
 authors = ["wilkos-dans", ""]
 readme = "README.md"

@@ -94,8 +94,8 @@ metrics:
             # 1. for each variable
             # a. initialize een XPath executor -> xpv (v voor variable)
             # b. split on '=' prefix (varname) = facets, suffix (expr) =  json-to-xml(unparsed-text(concat('http://vlo.clariah.dev.nl/vlo-index?q=_fileName:*','${RECORDPATH}')))
-            # c. zet de globale global variabelen (e.g. cmdi.name -> RECORDPATH) xpv.setVariable(RECORDPATH,cmdi.name) TODO: uitzoeken of dat kan in de python XPath lib
-            # d. varval = xpv.eval(expr) # TODO: moet waarschijnlijk een input hebben ... dat kan gewoon het record zijn of een <null/> document
+            # c. zet de globale global variabelen (e.g. cmdi.name -> RECORDPATH) xpv.setVariable(RECORDPATH,cmdi.name)
+            # d. varval = xpv.eval(expr)
             # e. zet de variabele op de test xp xpt.setVariable(varname,varval)
             # 2. zet de globale global variabelen (e.g. cmdi.name -> RECORDPATH) xpt.setVariable(RECORDPATH,cmdi.name)
             # 3. if values

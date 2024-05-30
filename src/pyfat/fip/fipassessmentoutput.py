@@ -68,6 +68,7 @@ class FipAssessmentOutput(object):
         self.g.add((rubricset, self.ftr.isDefinedBy, URIRef(f"https://pyfat.huc.knaw.nl/api/v1/metrics/v{metrics_version}")))
         self.g.add((rubricset, self.sorg.name, Literal(metrics_created_by)))
 
+        # Calculate the level of completeness
         sum_value_of_completion = sum(metric.lvl_completion for metric in metricresults)
         testrubic_completion = sum_value_of_completion / len(metricresults)
 
@@ -75,9 +76,12 @@ class FipAssessmentOutput(object):
         # "Percentage value of completion of a test result for a given resource. For example, if the test passes, completion is expected to be 1. Otherwise, completion is a value 0..1"
         self.g.add((rubricset, self.ftr.completion, Literal(testrubic_completion, datatype=XSD.decimal)))
 
-        # TODO: Agree on Pass or Fail the AssessmentRubricResultSet
-        # For now we'll use the percentage of completion and check this to a given threshold:
+        # For now, we'll use the percentage of completion and check this to a given threshold:
         self.g.add((rubricset, self.ftr.status, Literal("True" if testrubic_completion >= self.settings.TESTRUBIC_SUCCESS_THRESHOLD else "False", datatype=XSD.boolean)))
+
+        # Add the metrics/ResultSets members:
+        for metric in metricresults:
+            self.g.add((rubricset, self.prov.hadMember, self.fex[metric.metricid]))
 
     def create_testresultset(self, metric_id, metric_name, completion, bln_status):
         testresultset = self.fex[metric_id]

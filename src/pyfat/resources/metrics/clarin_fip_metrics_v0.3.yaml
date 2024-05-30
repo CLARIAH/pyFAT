@@ -1,11 +1,10 @@
 config:
   metric_specification: https://docs.google.com/spreadsheets/d/1hY2zPmFDZ6aIlY-MupK6gvynQZucOxikFDgv5YWxFyQ
   metric_version: 0.3
-  # namespaces loaded from external namespaces.json file. May be included here in the metrics like this:
-#  metric_namespaces:
-#    cmd: http://www.clarin.eu/cmd/1
-#   cmdp: http://www.clarin.eu/cmd/1/profiles/clarin.eu:cr1:p_1288172614026
-#     js: http://www.w3.org/2005/xpath-functions
+  metric_namespaces:
+    cmd: http://www.clarin.eu/cmd/1
+    cmdp: http://www.clarin.eu/cmd/1/profiles/clarin.eu:cr1:p_1288172614026
+    js: http://www.w3.org/2005/xpath-functions
 
 metrics:
   - metric_identifier: CLFIP-F1-01M
@@ -25,7 +24,7 @@ metrics:
             modality: all
       - metric_test_identifier: CLFIP-F1-01M-2
         metric_test_name: "Check to see if the selflink is a doi"
-        metric_test_score: 0.25
+        metric_test_score: 0.5
         metric_test_requirements:
           - test: "xpath:starts-with(//cmd:MdSelfLink, 'doi:')"
             modality: all
@@ -112,8 +111,8 @@ metrics:
     metric_description: "Which metadata schemas do you use for findability?"
     fair_principle: F2
     target: Metadata
-    modality: any
-    max_score: 3
+    modality: all
+    max_score: 4
     metric_tests:
       - metric_test_identifier: CLFIP-F2-01M-1
         metric_test_name: "Facet coverage score of the used CMD profile is larger than .2"
@@ -137,12 +136,12 @@ metrics:
     modality: any
     max_score: 1
     metric_tests:
-#      - metric_test_identifier: CLFIP-F3-01M-0
-#        metric_test_name: "Number of resource proxies"
-#        metric_test_score: 1
-#        metric_test_requirements:
-#          - test: "xpath:if (count(//cmd:ResourceProxy) gt 1) then (1.0) else (if (count(//cmd:ResourceProxy) gt 0) then (0.5) else (0.0))"
-#            modality: all
+      #      - metric_test_identifier: CLFIP-F3-01M-0
+      #        metric_test_name: "Number of resource proxies"
+      #        metric_test_score: 1
+      #        metric_test_requirements:
+      #          - test: "xpath:if (count(//cmd:ResourceProxy) gt 1) then (1.0) else (if (count(//cmd:ResourceProxy) gt 0) then (0.5) else (0.0))"
+      #            modality: all
       - metric_test_identifier: CLFIP-F3-01M-1
         metric_test_name: "Multiple resource proxies available"
         metric_test_score: 1
@@ -170,15 +169,22 @@ metrics:
         metric_test_score: 1
         metric_test_requirements:
           - test: "xpath:$facets/js:map/js:string[@key='_harvesterRoot']='CLARIN Partners'"
-            variables: ["facets='TODO'"]
+            variables: [ "facets='TODO'" ]
             modality: all
       - metric_test_identifier: CLFIP-F4-01M-2
         metric_test_name: "CLARIAH partners that are also NDE partners"
         metric_test_score: 1
         metric_test_requirements:
           - test: "xpath:$facets/js:map/js:string[@key='_harvesterRoot']='NDE Partners'"
-            variables: ["facets='TODO'"]
+            variables: [ "facets=json-to-xml(unparsed-text('http://localhost:9098/solr/vlo-index/select?wt=json&q=_fileName%3A*albac.xml'))" ]
             modality: all
+  #      - metric_test_identifier: CLFIP-F4-01M-3
+  #        metric_test_name: Check to see if artistname sort-name = 'Kikagaku Moyo'
+  #        metric_test_score: 1
+  #        metric_test_requirements:
+  #          - test: "xpath:$musicbrainz/js:map/js:string[@key='sort-name']/text()=$artist"
+  #            variables: ["musicbrainz=json-to-xml(unparsed-text('https://musicbrainz.org/ws/2/artist/3a605eba-b6a1-4298-855d-b3033df0bf8b?fmt=json'))", "artist='Kikagaku Moyo'"]
+  #            modality: all
 
   - metric_identifier: CLFIP-F4-02D
     metric_number: 6
@@ -222,7 +228,7 @@ metrics:
         metric_test_score: 1
         metric_test_requirements:
           - test: "xpath:exists((//cmd:MsSelfLink,//cmd:ResourceProxy[cmd:ResourceType='Metadata']/cmd:ResourceRef)[starts-with(.,'https://') or starts-with(.,'doi:') or starts-with(.,'hdl:')])"
-            modality: all            
+            modality: all
 
   - metric_identifier: CLFIP-A1.1-02D
     metric_number: 8
@@ -244,9 +250,9 @@ metrics:
         metric_test_score: 1
         metric_test_requirements:
           - test: "xpath:exists(//cmd:ResourceProxy[cmd:ResourceType='Resource']/cmd:ResourceRef[starts-with(.,'https://') or starts-with(.,'doi:') or starts-with(.,'hdl:')])"
-            modality: all            
+            modality: all
 
 created_by: CLARIAH-FIP
-date_created : 2023-03-01
-date_updated : 2024-05-16
+date_created: 2023-03-01
+date_updated: 2024-05-16
 version: 0.3

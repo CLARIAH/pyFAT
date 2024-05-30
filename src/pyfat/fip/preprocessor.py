@@ -33,6 +33,7 @@ class Preprocessor(object):
             cls._metrics_total = len(cls._metrics_list)
             cls._metrics_version = metrics_specs['config']['metric_version']
             cls._metrics_created_by = metrics_specs['created_by']
+            cls._metrics_ns = metrics_specs['config']['metric_namespaces']
 
     @classmethod
     def get_total_metrics(cls) -> int:
@@ -51,12 +52,6 @@ class Preprocessor(object):
         return cls._metrics_list
 
     @classmethod
-    def get_nspace_map(cls):
-        if not cls._ns_map:
-            cls._ns_map = cls._retrieve_namespaces_map()
-        return cls._ns_map
+    def get_nspace_map(cls) -> dict:
+        return cls._metrics_ns
 
-    @classmethod
-    def _retrieve_namespaces_map(cls) -> dict:
-        with open(resources.files(cls._settings.NSPACE_PCKG).joinpath(cls._settings.NSPACE_FILE)) as json_file:
-            return json.load(json_file)
