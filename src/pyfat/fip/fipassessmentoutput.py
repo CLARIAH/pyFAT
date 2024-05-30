@@ -31,7 +31,7 @@ class FipAssessmentOutput(object):
         self.g.add((tstresult, self.ftr.status, Literal(testresult.success, datatype=XSD.boolean)))
         # Add completion: This smells like FAIR "maturity":
         # "Percentage value of completion of a test result for a given resource. For example, if the test passes, completion is expected to be 1. Otherwise, completion is a value 0..1"
-        #TODO: How can you detrmine TEST completion as a percentage, if a test outcome can only be True or False or Indeterminate...
+        # TODO: How can you determine TEST completion as a percentage, if a test outcome can only be True or False or Indeterminate.
         # Until mistery solved, we'll skip this:
         # self.g.add((tstresult, self.ftr.completion, Literal(testresult.score, datatype=XSD.decimal)))
 
@@ -53,10 +53,6 @@ class FipAssessmentOutput(object):
         self.g.add((pyfatexecution, self.prov.wasStartedBy, self.fex.agent))
         self.g.add((pyfatexecution, self.prov.startedAtTime, Literal(datetime.now(), datatype=XSD.dateTime)))
 
-    # def stop_execution_activity(self, metricresults: List[MetricResult], metrics_version: str, metrics_created_by: str):
-    #     self.g.add((self.fex.pyFatExecution, self.prov.endedAtTime, Literal(datetime.now(), datatype=XSD.dateTime)))
-    #     self.create_assessment_rubric(metricresults, metrics_version, metrics_created_by)
-
     def create_assessment_rubric(self, metricresults: List[MetricResult], metrics_version: str, metrics_created_by: str):
         # Stop execution time: We're finished
         self.g.add((self.fex.pyFatExecution, self.prov.endedAtTime, Literal(datetime.now(), datatype=XSD.dateTime)))
@@ -72,15 +68,8 @@ class FipAssessmentOutput(object):
         self.g.add((rubricset, self.ftr.isDefinedBy, URIRef(f"https://pyfat.huc.knaw.nl/api/v1/metrics/v{metrics_version}")))
         self.g.add((rubricset, self.sorg.name, Literal(metrics_created_by)))
 
-        value_of_completion = 0
-        for metric in metricresults:
-            self.g.add((rubricset, self.prov.hadMember, self.fex[metric.metricid]))
-            if metric.success: # Succes, level of completeness is 1
-                value_of_completion = value_of_completion + 1
-            else: # Failure: Calculate the level of completeness:
-                value_of_completion = value_of_completion + (metric.score / metric.max_score)
-
-        testrubic_completion = value_of_completion/len(metricresults)
+        sum_value_of_completion = sum(metric.lvl_completion for metric in metricresults)
+        testrubic_completion = sum_value_of_completion / len(metricresults)
 
         # Add completion: This smells like FAIR "maturity":
         # "Percentage value of completion of a test result for a given resource. For example, if the test passes, completion is expected to be 1. Otherwise, completion is a value 0..1"
@@ -135,12 +124,13 @@ class FipAssessmentOutput(object):
     def __repr__(self) -> str:
         return self.g.serialize(format='ttl')
 
-    def create_test_results_and_set(self, metricresult: MetricResult):  # TODO: Check metric score and pass/fail for each TestResultSet
+    def create_test_results_and_set(self, metricresult: MetricResult):
         # Add the testResult nodes to the KG:
-        self.create_testresultset(metricresult.metricid, metricresult.metricname, metricresult.score/metricresult.max_score, metricresult.success)
+        self.create_testresultset(metricresult.metricid, metricresult.metricname, metricresult.lvl_completion, metricresult.success)
         for tstresult in metricresult.testresults:
             self.add_testresult(tstresult)
             self.add_result_to_set(metricresult.metricid, tstresult.testid)
+
 
 def main():
     pyproject_toml = toml.load(str("../../../pyproject.toml"))

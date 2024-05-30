@@ -13,49 +13,40 @@ from pyfat.fip.preprocessor import Preprocessor
 from pyfat.fip.testresult import TestResult, MetricResult, Modality
 
 
-def get_test_result(result_list: PyXdmValue, testmodality: Modality, max_tst_score: int, test_id: str, testname: str, testvalue: str, log: str, metricid: str) -> TestResult:
-    if result_list:
-        for item in result_list:
-            if item.string_value in ["true", "false"]:  # No method to determine the Python native type: You must cast/ask for a type...
-                if testmodality is Modality.ANY:
-                    for res in result_list:
-                        if res.boolean_value:
-                            return TestResult(True, max_tst_score, test_id, testname, testvalue, log, metricid, datetime.now())  # mod = any, result = True: Pass with test score
-                    return TestResult(False, 0, test_id, testname, testvalue, log, metricid, datetime.now())
-                elif testmodality is Modality.ALL:
-                    for res in result_list:
-                        if not res.boolean_value:
-                            return TestResult(False, 0, test_id, testname, testvalue, log, metricid, datetime.now())  # mod = All, result = False: Fail with 0 score
-                    return TestResult(True, max_tst_score, test_id, testname, testvalue, log, metricid, datetime.now())  # mod = All, result = all True: Pass with test score
+def get_test_result(result_list: List[PyXdmValue], testmodality: Modality, max_tst_score: float, test_id: str, testname: str, testvalue: str, log: str, metricid: str) -> TestResult:
+    if not result_list:
+        return TestResult(False, 0, test_id, testname, testvalue, log, metricid, datetime.now()) # Fail with 0 score
 
-            else:  # Alternative is a SINGLE value: Value should be between 0 and 1. Calculate the test score percentage, accordingly. #TODO: Do we allow for a test to return a value? This probably is a measurement or a benchmark result... How to interpret this? OSTrails test output: Pass, Fail or indeterminate.
-                return TestResult(True, round(item.double_value * max_tst_score, 1), test_id, testname, testvalue, log, metricid, datetime.now())
-    return TestResult(True, 0, test_id, testname, testvalue, log, metricid, datetime.now())  # Else: Fail with 0 score
+    if all(isinstance(item, PyXdmValue) and item.string_value in ["true", "false"] for item in result_list):
+        if testmodality is Modality.ANY:
+            success = any(res.boolean_value for res in result_list)
+            score = max_tst_score if success else 0
+        elif testmodality is Modality.ALL:
+            success = all(res.boolean_value for res in result_list)
+            score = max_tst_score if success else 0
+        else: #TODO: Do we allow for a test to return a double value? This probably is a measurement or a benchmark result... How to interpret this? OSTrails test output: Pass, Fail or indeterminate.
+            item = result_list[0]
+            success = 0 <= item.double_value <= 1
+            score = round(item.double_value * max_tst_score, 1) if success else 0
+    return TestResult(success, score, test_id, testname, testvalue, log, metricid, datetime.now())
 
 
-def get_metric_result(tst_results: List[TestResult], modality: Modality, max_score: int, metric_id: str, metric_name: str, metric_description: str) -> MetricResult:
+def get_metric_result(tst_results: List[TestResult], modality: Modality, max_score: float, metric_id: str, metric_name: str, metric_description: str) -> MetricResult:
+    test_ids = [test.testid for test in tst_results]
 
-    if modality is Modality.ANY:  # Metric will pass if one or more tests have passed.
-        score = 0
-        blnSuccess = False
-        for test in tst_results:
-            if test.success:  # Any, so metric has passed by now. We need the highest score from all to return, however not higher than the maximum metric score
-                blnSuccess = True
-                score = test.score if test.score > score else score # Metric score = Highest test score
-        return MetricResult(blnSuccess, score if score <= 0 else max_score, metric_id, metric_name, metric_description, [test.testid for test in tst_results], max_score, modality, tst_results)
+    if modality is Modality.ANY: # Metric passes if any test passes. Score is the highest score of passing tests, capped at max_score.
+        score = max((test.score for test in tst_results if test.success), default=0)
+        success = score > 0
+        return MetricResult(success, min(score, max_score), metric_id, metric_name, metric_description, test_ids, max_score, modality, tst_results, 1 if success else min(score, max_score)/max_score)
 
-    elif modality is Modality.ALL:  # Metric will only pass if ALL tests have passed. Metric score SHOULD be the SUM of all test scores.
-        score = 0
-        blnSuccess = True
-        for test in tst_results:
-            if test.success:
-                score = score + test.score # Metric score = Sum of test scores
-            else:
-                blnSuccess = False
-        return MetricResult(blnSuccess, score if score <= max_score else max_score, metric_id, metric_name, metric_description, [test.testid for test in tst_results], max_score, modality, tst_results)  # Metric can fail with a score > 0.
+    elif modality is Modality.ALL: # Metric passes only if all tests pass. Score is the sum of all test scores, capped at max_score.
+        success = all(test.success for test in tst_results)
+        score = sum(test.score for test in tst_results if test.success)
+        return MetricResult(success, min(score, max_score), metric_id, metric_name, metric_description, test_ids, max_score, modality, tst_results, 1 if success else min(score, max_score)/max_score)
 
-    else:  # No modality found...
-        return MetricResult(False, 0, metric_id, metric_name, metric_description, [test.testid for test in tst_results], max_score, modality, tst_results)
+    else: # Handle unexpected modality.
+        raise ValueError(f"Unexpected modality: {modality}")
+
 
 
 def main():
@@ -125,7 +116,7 @@ def main():
                                 # Optional: Add declarations to the output Log:
                                 if var_declare_str: log = log + "\n" + var_declare_str
 
-                            logger.debug(f"\t\t=> Setting Xquery content on procc: {var_declare_str} {xpath_tst}")
+                            # logger.debug(f"\t\t=> Setting Xquery content on procc: {var_declare_str} {xpath_tst}")
                             xpproc.set_query_content(f"{var_declare_str} {xpath_tst}")
 
                             # Run Xpath query
@@ -141,7 +132,7 @@ def main():
                             else:
                                 logger.warning(f"Test identifier '{metric_test["metric_test_identifier"]}' did NOT yield results!")
 
-                # All tests for this metric have completed: add the result nodes and generate metricresultset node:
+                # All tests for this metric have completed: add the result nodes and generate metric TestResultSet node:
                 metric_result = get_metric_result(metric_tst_results_list, Modality[metric["modality"].upper()], metric["max_score"], metric["metric_identifier"], metric["metric_name"], metric["metric_description"])
                 metricresults_list.append(metric_result)
                 assessment_output.create_test_results_and_set(metric_result)
@@ -150,32 +141,5 @@ def main():
             assessment_output.create_assessment_rubric(metricresults_list, Preprocessor.get_metrics_version(), Preprocessor.get_metrics_created_by())
             logger.info(assessment_output)
 
-
 if __name__ == '__main__':
     main()
-
-# processing this test
-# 1. split test on : prefix(language) = xpath, suffix (test) = $facets/js:map/js:string[@key='_harvesterRoot']='NDE Partners''
-# 2. do we know prefix?
-# 3. no, error: unknown language!
-# 4. yes: pass on to the xpath handler(test) -> result
-
-# xpath handler(test)
-# initialize een XPath executor -> xpt (t voor test)
-# 1. for each variable
-# a. initialize een XPath executor -> xpv (v voor variable)
-# b. split on = prefix (varname) = facets, suffix (expr) =  json-to-xml(unparsed-text(concat('http://vlo.clariah.dev.nl/vlo-index?q=_fileName:*','${RECORDPATH}')))
-# c. zet de globale global variabelen (e.g. cmdi.name -> RECORDPATH) xpv.setVariable(RECORDPATH,cmdi.name) TODO: uitzoeken of dat kan in de python XPath lib ==> Wilko: dat kan
-# d. varval = xpv.eval(expr) # TODO: moet waarschijnlijk een input hebben ... dat kan gewoon het record zijn of een <null/> document ==> Wilko:
-# e. zet de variabele op de test xp xpt.setVariable(varname,varval)
-# 2. zet de globale global variabelen (e.g. cmdi.name -> RECORDPATH) xpt.setVariable(RECORDPATH,cmdi.name) #TODO: How to 'interpret'/detect this action from the metrics.yaml? i.o.w: Not every test will need this var
-# 3. if values
-# a. values = xpt.eval(record.values)
-# b. for each value in values
-# i. xpt.setVariable('value',value)
-# ii. xpt.eval(record,test)
-# iii. test results += xpt.eval(record,test) context value
-# 4. if not values
-# a. xpt.eval(record,test)
-# b. test results += xpt.eval(record,test)
-# return results
