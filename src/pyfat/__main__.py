@@ -48,7 +48,7 @@ def get_test_result(result_list: List[PyXdmValue], testmodality: Modality, max_t
     return TestResult(success, score, test_id, testname, testvalue, log, metricid, datetime.now())
 
 
-def evaluate(cmdi_record_path) -> FipAssessmentOutput:  # Make sure to start the solrproxy.py tool to bypass basicAuth.
+def evaluate(cmdi_record_path, vars={}) -> FipAssessmentOutput:  # Make sure to start the solrproxy.py tool to bypass basicAuth.
 
     # Load settings config:
     settings = commons.settings
@@ -108,6 +108,10 @@ def evaluate(cmdi_record_path) -> FipAssessmentOutput:  # Make sure to start the
                                 # if '$RECORDPATH' in var_val:
                                     # varproc.declare_variable('RECORDPATH')
                                     # varproc.set_parameter('RECORDPATH', proc.make_string_value(os.path.basename(cmdi_record_path), encoding="UTF-8"))
+                                for k,v in vars:
+                                    #as literal text: var_val = var_val.replace(f"${k}", v)
+                                    varproc.declare_variable(k)
+                                    varproc.set_parameter(k,proc.make_string_value(v, encoding="UTF-8")
                                 json_result = varproc.evaluate(var_val)
                                 xpproc.set_parameter(var_name, json_result)
                                 var_declare_list.append(f"declare variable ${var_name} external")
