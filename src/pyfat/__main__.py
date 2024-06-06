@@ -103,17 +103,19 @@ def evaluate(cmdi_record_path) -> FipAssessmentOutput:  # Make sure to start the
                                 var_val = varia.split("=", 1)[1]
                                 logger.debug(f'\t\t=> Var name={var_name}, value={var_val}')
                                 varproc = proc.new_xpath_processor()
-                                # if '$RECORDPATH' in var_val:  # TODO: RECORDPATH variable must be known by the caller. Find a way to make this generic & find out why we need this. => FINISH Metric CLFIP-F4-01M
-                                #     varproc.declare_variable('RECORDPATH')
-                                #     varproc.set_parameter('RECORDPATH', proc.make_string_value(os.path.basename(cmdi_record_path), encoding="UTF-8"))
+                                var_val = var_val.replace("$RECORDPATH", os.path.basename(cmdi_record_path))  # TODO: $RECORDPATH parameter must be known by the caller. Find a way to make this generic.
+                                # Or create an external parameter for it:
+                                # if '$RECORDPATH' in var_val:
+                                    # varproc.declare_variable('RECORDPATH')
+                                    # varproc.set_parameter('RECORDPATH', proc.make_string_value(os.path.basename(cmdi_record_path), encoding="UTF-8"))
                                 json_result = varproc.evaluate(var_val)
                                 xpproc.set_parameter(var_name, json_result)
                                 var_declare_list.append(f"declare variable ${var_name} external")
                             var_declare_str = '; '.join(var_declare_list) + ";"
                             # Add declarations to the output Log:
-                            if var_declare_str: log = log + var_declare_str
+                            if var_declare_str: log = log + ", " + var_declare_str
 
-                        # logger.debug(f"\t\t=> Setting Xquery content on procc: {var_declare_str} {xpath_tst}")
+                        logger.info(f"\t\t=> Setting Xquery content on procc: {var_declare_str} {xpath_tst}")
                         xpproc.set_query_content(f"{var_declare_str} {xpath_tst}")
 
                         # Run Xpath query
@@ -145,7 +147,6 @@ def main():
 
     for cmdi in resources.files("tests.resources.cmdi").iterdir():
         evaluate(cmdi)
-
 
 if __name__ == '__main__':
     main()

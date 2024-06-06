@@ -175,17 +175,9 @@ metrics:
         metric_test_name: "CLARIAH partners that are also NDE partners"
         metric_test_score: 1
         metric_test_requirements:
-          - test: "xpath:$facets/js:map/js:string[@key='_harvesterRoot']='NDE Partners'"
-            variables: [ "facets=json-to-xml(unparsed-text('http://localhost:9098/solr/vlo-index/select?wt=json&q=_fileName%3A*albac.xml'))" ]
+          - test: "xpath:$facets//js:map/js:string[@key='_harvesterRoot']='NDE'"
+            variables: [ "facets=json-to-xml(unparsed-text('http://localhost:9098/solr/vlo-index/select?wt=json&omitHeader=true&q=_fileName%3A*$RECORDPATH'))" ]
             modality: all
-  #      - metric_test_identifier: CLFIP-F4-01M-3
-  #        metric_test_name: Check to see if artistname sort-name = 'Kikagaku Moyo'
-  #        metric_test_score: 1
-  #        metric_test_requirements:
-  #          - test: "xpath:$musicbrainz/js:map/js:string[@key='sort-name']/text()=$artist"
-  #            variables: ["musicbrainz=json-to-xml(unparsed-text('https://musicbrainz.org/ws/2/artist/3a605eba-b6a1-4298-855d-b3033df0bf8b?fmt=json'))", "artist='Kikagaku Moyo'"]
-  #            modality: all
-
   - metric_identifier: CLFIP-F4-02D
     metric_number: 6
     metric_name: "data search"
