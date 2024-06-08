@@ -169,7 +169,7 @@ metrics:
         metric_test_score: 1
         metric_test_requirements:
           - test: "xpath:$facets/js:map/js:string[@key='_harvesterRoot']='CLARIN Partners'"
-            variables: [ "facets='TODO'" ]
+            variables: [ "facets=json-to-xml($FACETS)" ]
             modality: all
       - metric_test_identifier: CLFIP-F4-01M-2
         metric_test_name: "CLARIAH partners that are also NDE partners"

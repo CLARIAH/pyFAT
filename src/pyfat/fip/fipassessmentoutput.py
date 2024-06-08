@@ -23,6 +23,8 @@ class FipAssessmentOutput:
         load_dotenv=True,
     )
 
+    score = None
+
     def __init__(self, appname: str, version: str, scm: str):
         self.prov = Namespace("http://www.w3.org/ns/prov#")
         self.ftr = Namespace("https://w3id.org/fair_test_result#")
@@ -112,6 +114,7 @@ class FipAssessmentOutput:
 
     def _add_completion_status(self, rubricset, metricresults: List[MetricResult]):
         completion = sum(metric.lvl_completion for metric in metricresults) / len(metricresults)
+        self.score = completion
         self.g.add((rubricset, self.ftr.completion, Literal(completion, datatype=XSD.decimal)))
         status = "True" if completion >= self.settings.TESTRUBIC_SUCCESS_THRESHOLD else "False"
         self.g.add((rubricset, self.ftr.status, Literal(status, datatype=XSD.boolean)))
