@@ -49,24 +49,18 @@ def get_test_result(result_list: List[PyXdmValue], testmodality: Modality, max_t
     return TestResult(success, score, test_id, testname, testvalue, log, metricid, datetime.now())
 
 
-def evaluate(cmdi_record_path: str, record: dict | str) -> FipAssessmentOutput:  # Make sure to start the solrproxy.py tool to bypass basicAuth.
+def evaluate(cmdi_record_path: str, variables_dict: dict = {}) -> FipAssessmentOutput:  # Make sure to start the solrproxy.py tool to bypass basicAuth.
     """
     Evaluate a CMDI record using the FIP metrics.
     The
 
     :param cmdi_record_path: The path to the CMDI record to evaluate which are harvested by OAI-PMH in daily harvesting.
-    :param record: The corresponding record of the cmdi record got from the Solr indexer of VLO
+    :param variables_dict: The corresponding record of the cmdi record got from the Solr indexer of VLO
     """
 
     # Load settings config:
     settings = commons.settings
     logger = setup_logging()
-
-    # Raise error if json record is not dict or str and make sure record is dict.
-    if not (isinstance(record, dict) or isinstance(record, str)):
-        raise ValueError(f"Expected json record to be a dict or a str, but got {type(record)}")
-    if isinstance(record, str):
-        record = json.loads(record, encoding="UTF-8")
 
     # Process/parse Metrics definition
     preproc = Preprocessor(settings)
@@ -116,23 +110,15 @@ def evaluate(cmdi_record_path: str, record: dict | str) -> FipAssessmentOutput: 
                                 var_name = varia.split("=", 1)[0]
                                 var_val = varia.split("=", 1)[1]
                                 logger.debug(f'\t\t=> Var name={var_name}, value={var_val}')
+
                                 varproc = proc.new_xpath_processor()
-                                # TODO: $RECORDPATH parameter must be known by the caller. Find a way to make this generic.
-                                var_val = var_val.replace("$RECORDPATH", os.path.basename(cmdi_record_path))
-                                # Or create an external parameter for it:
-                                # if '$RECORDPATH' in var_val:
-                                    # varproc.declare_variable('RECORDPATH')
-                                    # varproc.set_parameter('RECORDPATH', proc.make_string_value(os.path.basename(cmdi_record_path), encoding="UTF-8"))
-                                for k, v in record.items():
-                                    #as literal text: var_val = var_val.replace(f"${k}", v)
-                                    print(f"{k} => {v}")
+                                varproc.declare_variable("RECORDPATH")
+                                varproc.set_parameter("RECORDPATH", proc.make_string_value(cmdi_record_path, encoding="UTF-8"))
+
+                                for k, v in variables_dict.items():
                                     varproc.declare_variable(k)
                                     varproc.set_parameter(k, proc.make_string_value(json.dumps(v), encoding="UTF-8"))
-                                try:
-                                    json_result = varproc.evaluate(var_val)
-                                except (RuntimeError, BaseException, PySaxonApiError) as err:
-                                    logger.error(f"\t\tError executing Xpath test: {var_val}: {err}")
-                                    exit()
+                                json_result = varproc.evaluate(var_val)
                                 xpproc.set_parameter(var_name, json_result)
                                 var_declare_list.append(f"declare variable ${var_name} external")
                             var_declare_str = '; '.join(var_declare_list) + ";"
