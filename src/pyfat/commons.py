@@ -1,9 +1,15 @@
-import logging
+import os
 import sys
+import pyfat
+import logging
 
 from dynaconf import Dynaconf
+module_path = os.path.dirname(pyfat.__file__)
 
-settings = Dynaconf(settings_files=["conf/settings.toml"], secrets=["conf/.secrets.toml"], environments=True, default_env="default", load_dotenv=True)
+# TODO: now reads the conf from pyfat/conf/settings.toml; it should check for external conf and fall back to the default
+settings = Dynaconf(settings_files=[os.path.join(module_path, "conf/settings.toml")],
+                    secrets=[os.path.join(module_path, "conf/.secrets.toml")],
+                    environments=True, default_env="default", load_dotenv=True)
 
 
 def setup_logging():

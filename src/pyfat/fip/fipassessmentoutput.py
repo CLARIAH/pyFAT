@@ -1,3 +1,4 @@
+import os.path
 import uuid
 from datetime import datetime
 from typing import List
@@ -6,6 +7,7 @@ from dynaconf import Dynaconf
 from rdflib import Graph, Namespace, Literal, URIRef
 from rdflib.namespace import RDF, XSD
 
+from pyfat import commons
 from pyfat.fip.testresult import TestResult, MetricResult
 
 
@@ -16,8 +18,8 @@ class FipAssessmentOutput:
     """
 
     settings = Dynaconf(
-        settings_files=["conf/settings.toml"],
-        secrets=["conf/.secrets.toml"],
+        settings_files=[os.path.join(commons.module_path, "conf/settings.toml")],
+        secrets=[os.path.join(commons.module_path, "conf/.secrets.toml")],
         environments=True,
         default_env="default",
         load_dotenv=True,

@@ -69,7 +69,7 @@ def evaluate(cmdi_record_path: str, variables_dict: dict = {}) -> FipAssessmentO
     logger.debug(f"ENV: {settings.DYNACONF_ENV}")
     logger.debug(f'Metrics v{Preprocessor.get_metrics_version()}; number of metrics: {Preprocessor.get_total_metrics()}')
 
-    pyproject_toml = toml.load(settings.PYPROJECT_TOML_PATH)
+    pyproject_toml = toml.load(os.path.join(commons.module_path, settings.PYPROJECT_TOML_PATH))
 
     with PySaxonProcessor(license=False) as proc:
         logger.debug(f"Processor: {proc.version}")
