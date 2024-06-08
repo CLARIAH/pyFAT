@@ -176,7 +176,7 @@ metrics:
         metric_test_score: 1
         metric_test_requirements:
           - test: "xpath:$facets//js:map/js:string[@key='_harvesterRoot']='NDE'"
-            variables: [ "facets=json-to-xml(unparsed-text('http://localhost:9098/solr/vlo-index/select?wt=json&omitHeader=true&q=_fileName%3A*$RECORDPATH'))" ]
+            variables: [ "facets=json-to-xml($FACETS)" ]
             modality: all
   - metric_identifier: CLFIP-F4-02D
     metric_number: 6
