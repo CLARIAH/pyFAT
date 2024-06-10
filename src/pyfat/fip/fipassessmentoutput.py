@@ -151,3 +151,9 @@ class FipAssessmentOutput:
 
     def __repr__(self) -> str:
         return self.g.serialize(format='ttl')
+
+    def ttl(self) -> str:
+        return self.g.serialize(format='ttl')
+    
+    def trix(self) -> str:
+        return self.g.serialize(format='trix')
