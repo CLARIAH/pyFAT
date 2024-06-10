@@ -118,7 +118,11 @@ def evaluate(cmdi_record_path: str, variables_dict: dict = {}) -> FipAssessmentO
                                 for k, v in variables_dict.items():
                                     varproc.declare_variable(k)
                                     varproc.set_parameter(k, proc.make_string_value(json.dumps(v), encoding="UTF-8"))
-                                json_result = varproc.evaluate(var_val)
+                                try:
+                                    json_result = varproc.evaluate(var_val)
+                                except (RuntimeError, BaseException, PySaxonApiError) as err:
+                                    logger.error(f"\t\tError executing Xpath test: {var_val}: {err}")
+                                    exit(1)
                                 xpproc.set_parameter(var_name, json_result)
                                 var_declare_list.append(f"declare variable ${var_name} external")
                             var_declare_str = '; '.join(var_declare_list) + ";"
