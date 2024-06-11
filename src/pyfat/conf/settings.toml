@@ -1,6 +1,6 @@
 [default]
 dynaconf_env = "DEFAULT"
-loggers = [{ "name" = "pyfat", "log_file" = "pyfat.log", "log_level" = 20, "log_format" = "%(asctime)s %(levelname)s: %(message)s", "log_date_format" = "%Y-%m-%d %H:%M:%S" }]
+loggers = [{ "name" = "pyfat", "log_file" = "pyfat.log", "log_level" = 30, "log_format" = "%(asctime)s %(levelname)s: %(message)s", "log_date_format" = "%Y-%m-%d %H:%M:%S" }]
 #log_file = "@format {env[BASE_DIR]}/logs/pyfat.log"
 pyproject_toml_path = 'conf/pyproject.toml'
 vlo_solr_url = 'http://localhost:9098/solr/vlo-index'
