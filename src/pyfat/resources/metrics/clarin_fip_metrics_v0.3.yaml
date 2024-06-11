@@ -118,15 +118,14 @@ metrics:
         metric_test_name: "Facet coverage score of the used CMD profile is larger than .2"
         metric_test_score: 1
         metric_test_requirements:
-          - test: "xpath:xs:decimal(replace(unparsed-text(concat('https://curation.clarin.eu/curate?url-input=',encode-for-uri($param))),'^.*Facets Section.*? ([0-9]+\.[0-9]+) / 1.00.*$','$1','sm')) > 0.2"
+          - test: "xpath:xs:decimal(replace(unparsed-text(concat('https://curation.clarin.eu/curate?url-input=',encode-for-uri($param))),'^.*Facets Section.*? ([0-9]+\\.[0-9]+) / 1.00.*$','$1','sm')) > 0.2"
             modality: all
       - metric_test_identifier: CLFIP-F2-01M-2
         metric_test_name: "Facet coverage score of the used CMD profile is larger than .8"
         metric_test_score: 3
         metric_test_requirements:
-          - test: "xpath:xs:decimal(doc(concat('https://curation.clarin.eu/download/profile/',replace(//cmd:MdProfile,'[^a-zA-Z0-9]','_')))/cmdProfileReport/facetReport/string(@score)) > 0.3"
+          - test: "xpath:xs:decimal(replace(unparsed-text(concat('https://curation.clarin.eu/curate?url-input=',encode-for-uri($param))),'^.*Facets Section.*? ([0-9]+\\.[0-9]+) / 1.00.*$','$1','sm')) > 0.8"
             modality: all
-
   - metric_identifier: CLFIP-F3-01M
     metric_number: 4
     metric_name: "metadata linkage technology"
