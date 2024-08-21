@@ -96,54 +96,14 @@ def evaluate(cmdi_record_path: str, variables_dict: dict = {}) -> FipAssessmentO
             for metric_test in metric["metric_tests"]:
                 logger.debug(f'\t=> Test: {metric_test["metric_test_name"]}')
                 for metric_test_requirement in metric_test["metric_test_requirements"]:
-                    if metric_test_requirement["test"].startswith("xpath:"):  # In Xpath handler... TODO: implement logic for different handlers here (i.e: xpath, Python, etc. Factory)
+                     response = requests.post(f'https://localhost:5000/test/{metric_test}', cmdi=cmdi_record_path)
 
-                        xslt_result = None  # reset results...
-                        log = f'Test modality = {metric_test_requirement["modality"]}'
-                        xpath_tst = metric_test_requirement["test"].split("xpath:", 1)[1]
-                        logger.debug(f'\t\t=> Test: {xpath_tst}, modality: {metric_test_requirement["modality"]}')
+                     metric_tst_results_list.append(test_result)
+                     logger.debug(f'\t\t=> Test Result: {test_result}')
+                     #   else:
+                     #      logger.warning(f"Test identifier '{metric_test['metric_test_identifier']}' did NOT yield results!")
 
-                        var_declare_list = []
-                        var_declare_str = ''
-                        if metric_test_requirement.get("variables", False):
-                            for varia in metric_test_requirement.get("variables"):
-                                var_name = varia.split("=", 1)[0]
-                                var_val = varia.split("=", 1)[1]
-                                logger.debug(f'\t\t=> Var name={var_name}, value={var_val}')
-
-                                varproc = proc.new_xpath_processor()
-                                varproc.declare_variable("RECORDPATH")
-                                varproc.set_parameter("RECORDPATH", proc.make_string_value(cmdi_record_path, encoding="UTF-8"))
-
-                                for k, v in variables_dict.items():
-                                    varproc.declare_variable(k)
-                                    varproc.set_parameter(k, proc.make_string_value(json.dumps(v), encoding="UTF-8"))
-                                try:
-                                    json_result = varproc.evaluate(var_val)
-                                except (RuntimeError, BaseException, PySaxonApiError) as err:
-                                    logger.error(f"\t\tError executing Xpath test: {var_val}: {err}")
-                                    exit(1)
-                                xpproc.set_parameter(var_name, json_result)
-                                var_declare_list.append(f"declare variable ${var_name} external")
-                            var_declare_str = '; '.join(var_declare_list) + ";"
-                            # Add declarations to the output Log:
-                            if var_declare_str: log = log + ", " + var_declare_str
-
-                        logger.info(f"\t\t=> Setting Xquery content on procc: {var_declare_str} {xpath_tst}")
-                        xpproc.set_query_content(f"{var_declare_str} {xpath_tst}")
-
-                        # Run Xpath query
-                        try:  # Looks like the parser might still print a java.io.IOException, that cannot be caught: FODC0002  I/O error reported by XML parser processing https://curation.clarin.eu/download/profile/clarin_eu_cr1_p_1650879720846. Caused by java.io.IOException: Server returned HTTP response code: 500 for URL: (...)
-                            xslt_result = xpproc.run_query_to_value(encoding="UTF-8")
-                        except (RuntimeError, BaseException, PySaxonApiError) as err:
-                            logger.error(f"\t\tError executing Xpath test: {xpath_tst}: {err}")
-                        if xslt_result:  # Do not include None results in the metric => TODO: take account for None results (i.e: indeterminate) in the end/total assessment score. For now just skip them.Beware:
-                            test_result = get_test_result(xslt_result, Modality[metric_test['metric_test_requirements'][0]['modality'].upper()], metric_test["metric_test_score"], metric_test["metric_test_identifier"],
-                                                          metric_test["metric_test_name"], metric_test_requirement["test"], log, metric["metric_identifier"])
-                            metric_tst_results_list.append(test_result)
-                            logger.debug(f'\t\t=> Test Result: {test_result}')
-                        else:
-                            logger.warning(f"Test identifier '{metric_test['metric_test_identifier']}' did NOT yield results!")
+                    # tot hier vervangen ???
 
             # All tests for this metric have completed: add the result nodes and generate metric TestResultSet node:
             metric_result = get_metric_result(metric_tst_results_list, Modality[metric["modality"].upper()], metric["max_score"], metric["metric_identifier"], metric["metric_name"], metric["metric_description"])
