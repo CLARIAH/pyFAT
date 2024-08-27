@@ -98,7 +98,7 @@ def evaluate(cmdi_record_path: str, variables_dict: dict = {}) -> FipAssessmentO
                 for metric_test_requirement in metric_test["metric_test_requirements"]:
                      response = requests.post(f'https://localhost:5000/test/{metric_test}', cmdi=cmdi_record_path)
 
-                     metric_tst_results_list.append(test_result)
+                     metric_tst_results_list.append(response)
                      logger.debug(f'\t\t=> Test Result: {test_result}')
                      #   else:
                      #      logger.warning(f"Test identifier '{metric_test['metric_test_identifier']}' did NOT yield results!")
