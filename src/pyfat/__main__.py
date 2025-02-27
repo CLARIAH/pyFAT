@@ -59,8 +59,9 @@ def evaluate(cmdi_record_path: str, variables_dict: dict = {}) -> FipAssessmentO
     """
 
     # Load settings config:
-    settings = commons.settings
-    logger = setup_logging()
+    # settings = commons.settings
+    settings = commons.setup_env("settings.toml")
+    logger = setup_logging(settings)
 
     # Process/parse Metrics definition
     preproc = Preprocessor(settings)
@@ -68,8 +69,6 @@ def evaluate(cmdi_record_path: str, variables_dict: dict = {}) -> FipAssessmentO
 
     logger.debug(f"ENV: {settings.DYNACONF_ENV}")
     logger.debug(f'Metrics v{Preprocessor.get_metrics_version()}; number of metrics: {Preprocessor.get_total_metrics()}')
-
-    pyproject_toml = toml.load(os.path.join(commons.module_path, settings.PYPROJECT_TOML_PATH))
 
     with PySaxonProcessor(license=False) as proc:
         logger.debug(f"Processor: {proc.version}")
@@ -83,7 +82,7 @@ def evaluate(cmdi_record_path: str, variables_dict: dict = {}) -> FipAssessmentO
 
         logger.debug(f'CMDI FILE: {str(cmdi_record_path)}, {os.path.basename(cmdi_record_path)}')
 
-        assessment_output = FipAssessmentOutput(pyproject_toml['tool']['poetry']['name'], pyproject_toml['tool']['poetry']['version'], pyproject_toml['project']['urls']['Repository'])
+        assessment_output = FipAssessmentOutput(settings.APP_NAME, settings.APP_VERSION, settings.APP_URL)
         assessment_output.set_assessedresource(str(cmdi_record_path))
         assessment_output.start_execution_activity(settings.PROV_AGENT_NAME, settings.PROV_AGENT_IDENTIFIER)
 

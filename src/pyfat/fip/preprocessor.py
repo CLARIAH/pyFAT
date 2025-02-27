@@ -30,7 +30,8 @@ class Preprocessor:
     @classmethod
     def parse_metrics_yaml(cls):
         """Parse the YAML file containing metrics"""
-        cls._metrics_loc = resources.files(cls._settings.METRICS_PCKG).joinpath(cls._settings.METRICS_FILE)
+        # cls._metrics_loc = resources.files(cls._settings.METRICS_PCKG).joinpath(cls._settings.METRICS_FILE)
+        cls._metrics_loc = cls._settings.METRICS_FILE
         with open(cls._metrics_loc, 'r') as file:
             metrics_specs = yaml.load(file, Loader=yaml.FullLoader)
             cls._metrics_list = metrics_specs['metrics']
