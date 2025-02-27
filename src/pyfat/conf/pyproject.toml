@@ -1,6 +1,0 @@
-[tool.poetry]
-name = "pyFAT"
-version = "0.1.3a"
-
-[project.urls]
-Repository = "https://github.com/CLARIAH/pyFAT.git"
