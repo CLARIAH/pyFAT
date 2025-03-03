@@ -57,9 +57,7 @@ def evaluate(cmdi_record_path: str, variables_dict: dict = {}) -> FipAssessmentO
     :param cmdi_record_path: The path to the CMDI record to evaluate which are harvested by OAI-PMH in daily harvesting.
     :param variables_dict: The corresponding record of the cmdi record got from the Solr indexer of VLO
     """
-
     # Load settings config:
-    # settings = commons.settings
     settings = commons.setup_env("settings.toml")
     logger = setup_logging(settings)
 

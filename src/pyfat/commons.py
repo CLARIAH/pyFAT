@@ -18,12 +18,15 @@ def setup_env(settings_file: str) -> Dynaconf:
     return settings
 
 def setup_logging(settings: Dynaconf):
+    handlers = []
     for log in settings.loggers:
-        # logfile_handler = logging.FileHandler(filename=log.get('log_file'), mode='a')
-        # logfile_handler.setLevel(log.get('log_level'))
-        stdout_handler = logging.StreamHandler(stream=sys.stdout)
-        stdout_handler.setFormatter(logging.Formatter(log.get('log_format')))
-        # handlers = [logfile_handler, stdout_handler]
-        handlers = [stdout_handler]
-        logging.basicConfig(level=log.get('log_level'), format=log.get('log_format'), handlers=handlers, datefmt=log.get('log_date_format'))
-        return logging.getLogger(log.get('name'))
+        if "log_file" in log.keys():
+            log_handler = logging.FileHandler(filename=log.get('log_file'), mode='a')
+        else:
+            log_handler = logging.StreamHandler(stream=sys.stdout)
+
+        log_handler.setFormatter(logging.Formatter(log.get('log_format')))
+        log_handler.setLevel(log.get('log_level'))
+        handlers.append(log_handler)
+    logging.basicConfig(level=log.get('log_level'), format=log.get('log_format'), handlers=handlers, datefmt=log.get('log_date_format'))
+    return logging.getLogger(log.get('name'))
