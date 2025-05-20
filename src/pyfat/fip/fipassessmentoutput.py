@@ -17,14 +17,15 @@ class FipAssessmentOutput:
     https://ostrails.github.io/FAIR_assessment_output_specification/release/0.0.1/index-en.html
     """
 
-    settings = Dynaconf(
-        settings_files=[os.path.join(commons.module_path, "conf/settings.toml")],
-        secrets=[os.path.join(commons.module_path, "conf/.secrets.toml")],
-        environments=True,
-        default_env="default",
-        load_dotenv=True,
-    )
+    # settings = Dynaconf(
+    #     settings_files=[os.path.join(commons.module_path, "conf/settings.toml")],
+    #     secrets=[os.path.join(commons.module_path, "conf/.secrets.toml")],
+    #     environments=True,
+    #     default_env="default",
+    #     load_dotenv=True,
+    # )
 
+    settings = commons.setup_env("settings.toml")
     score = None
 
     def __init__(self, appname: str, version: str, scm: str):

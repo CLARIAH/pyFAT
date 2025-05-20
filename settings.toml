@@ -1,13 +1,15 @@
 [default]
+app_name = "pyfat"
+app_version = "0.1.3"
+app_url = "https://github.com/CLARIAH/pyFAT"
 dynaconf_env = "DEFAULT"
 loggers = [{ "name" = "pyfat", "log_file" = "pyfat.log", "log_level" = 30, "log_format" = "%(asctime)s %(levelname)s: %(message)s", "log_date_format" = "%Y-%m-%d %H:%M:%S" }]
 #log_file = "@format {env[BASE_DIR]}/logs/pyfat.log"
-pyproject_toml_path = 'conf/pyproject.toml'
 vlo_solr_url = 'http://localhost:9098/solr/vlo-index'
-metrics_file = "clarin_fip_metrics_v0.3.yaml"
-metrics_pckg = "pyfat.resources.metrics"
-nspace_file = "namespaces.json"
-nspace_pckg = "pyfat.resources"
+metrics_file = "clarin_fip_metrics_v0.3.yaml" # internet file or local
+#metrics_pckg = "pyfat.resources.metrics"
+#nspace_file = "namespaces.json"
+#nspace_pckg = "pyfat.resources"
 prov_agent_identifier = "0000-0002-5228-1970"
 prov_agent_name = "VLO-Harvester"
 testrubic_success_threshold = 0.62

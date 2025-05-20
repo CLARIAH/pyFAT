@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cmd:CMD xmlns:cmd="http://www.clarin.eu/cmd/1"
+         xmlns:cmdp="http://www.clarin.eu/cmd/1/profiles/clarin.eu:cr1:p_1440426460262"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         CMDVersion="1.2"
+         xsi:schemaLocation="http://www.clarin.eu/cmd/1 https://infra.clarin.eu/CMDI/1.x/xsd/cmd-envelop.xsd http://www.clarin.eu/cmd/1/profiles/clarin.eu:cr1:p_1440426460262 https://catalog.clarin.eu/ds/ComponentRegistry/rest/registry/1.x/profiles/clarin.eu:cr1:p_1440426460262/xsd">
+   <cmd:Header>
+      <cmd:MdCreator>Koos_S</cmd:MdCreator>
+      <cmd:MdCreationDate>2003-12-04</cmd:MdCreationDate>
+      <cmd:MdSelfLink xmlns:lat="http://lat.mpi.nl/"
+                      lat:flatURI="lat:10744_0d6bd8cb_2271_42e8_9cd1_c4deaedf1c1b">https://hdl.handle.net/10744/0d6bd8cb-2271-42e8-9cd1-c4deaedf1c1b</cmd:MdSelfLink>
+      <cmd:MdProfile>clarin.eu:cr1:p_1440426460262</cmd:MdProfile>
+      <cmd:MdCollectionDisplayName>Meertens Collections</cmd:MdCollectionDisplayName>
+   </cmd:Header>
+   <cmd:Resources>
+      <cmd:ResourceProxyList>
+         <cmd:ResourceProxy xmlns:lat="http://lat.mpi.nl/" id="v" lat:label="visit us">
+            <cmd:ResourceType mimetype="text/html">Resource</cmd:ResourceType>
+            <cmd:ResourceRef lat:flatURI="lat:10744_a3a4906f_75be_4213_8e30_6997a38a989b">https://hdl.handle.net/10744/a3a4906f-75be-4213-8e30-6997a38a989b</cmd:ResourceRef>
+         </cmd:ResourceProxy>
+         <cmd:ResourceProxy id="home-10744_0d6bd8cb_2271_42e8_9cd1_c4deaedf1c1b">
+            <cmd:ResourceType mimetype="text/html">LandingPage</cmd:ResourceType>
+            <cmd:ResourceRef>https://www.meertens.knaw.nl/flat/islandora/object/lat%3A10744_0d6bd8cb_2271_42e8_9cd1_c4deaedf1c1b#</cmd:ResourceRef>
+         </cmd:ResourceProxy>
+      </cmd:ResourceProxyList>
+      <cmd:JournalFileProxyList/>
+      <cmd:ResourceRelationList/>
+   </cmd:Resources>
+   <cmd:Components>
+      <cmdp:MeertensCollection>
+         <cmdp:CoreCollectionInformation>
+            <cmdp:title xml:lang="nl">Collectie inzake het dialect van Westfriesland (J. de Vries Az), 1913 - 1923</cmdp:title>
+            <cmdp:description xml:lang="nl">J. de Vries (Az.) was schoolhoofd te Moerbeek en vanaf 1908 hoofd der School 1 en tuinbouwonderwijzer in de polder Koegras, gemeente Den Helder. De collectie bestaat uit manuscripten betreffende de studie van Westfries dialect, enkele verhalen in Westfries dialect en manuscripten betreffende historisch onderzoek en documentatie.</cmdp:description>
+            <cmdp:created>1913 - 1923</cmdp:created>
+            <cmdp:rights>Restricted Access</cmdp:rights>
+            <cmdp:relation xml:lang="nl">Westfriesche woorden / J. de Vries Az. - Nieuwe Niedorp : Groot, 1910. - en G.J. Boekenoogen. Westfriese woorden.</cmdp:relation>
+            <cmdp:rightsHolder>Meertens Institute</cmdp:rightsHolder>
+            <cmdp:collectionID>204</cmdp:collectionID>
+            <cmdp:extent>0,10 m.</cmdp:extent>
+            <cmdp:shortTitle xml:lang="nl">de Vries Az</cmdp:shortTitle>
+            <cmdp:web>true</cmdp:web>
+            <cmdp:category>Dialectology/language variation</cmdp:category>
+            <cmdp:subcategory>Externally acquired archives and collections</cmdp:subcategory>
+         </cmdp:CoreCollectionInformation>
+         <cmdp:Inventory>
+            <cmdp:CoreResourceInformation>
+               <cmdp:inventoryId>1</cmdp:inventoryId>
+               <cmdp:description>Manuscripten betreffende Westfriesche woorden. Z.j. 1 map N.B. Een aantekenboekje en negen schriften waarvan nummer 5 ontbreekt en een brief.</cmdp:description>
+               <cmdp:oldBoxNumber>D.A. 039</cmdp:oldBoxNumber>
+               <cmdp:TechnicalMetadata>
+                  <cmdp:digital>false</cmdp:digital>
+               </cmdp:TechnicalMetadata>
+            </cmdp:CoreResourceInformation>
+            <cmdp:CoreResourceInformation>
+               <cmdp:inventoryId>2</cmdp:inventoryId>
+               <cmdp:description>Manuscript betreffende Westfriese eigennamen. Z.j. 1 map N.B. Vri 3</cmdp:description>
+               <cmdp:oldBoxNumber>D.A. 039</cmdp:oldBoxNumber>
+               <cmdp:TechnicalMetadata>
+                  <cmdp:digital>false</cmdp:digital>
+               </cmdp:TechnicalMetadata>
+            </cmdp:CoreResourceInformation>
+            <cmdp:CoreResourceInformation>
+               <cmdp:inventoryId>3</cmdp:inventoryId>
+               <cmdp:description>Manuscript J. Klomp. 1913. 1 map. N.B. Een aanvullingslijst Uitdr. en woorden N.H. dialect Vri 2</cmdp:description>
+               <cmdp:oldBoxNumber>D.A. 039</cmdp:oldBoxNumber>
+               <cmdp:TechnicalMetadata>
+                  <cmdp:digital>false</cmdp:digital>
+               </cmdp:TechnicalMetadata>
+            </cmdp:CoreResourceInformation>
+            <cmdp:CoreResourceInformation>
+               <cmdp:inventoryId>4</cmdp:inventoryId>
+               <cmdp:description>Manuscripten betreffende Westfries dialect. Z.j. 1 map. N.B. “‘n Pamblieke verkooping”; “Bram en Bart”; “De noodlottege vaifcente “; “Op jacht “; “Trekke zonder pain, ‘t Vale vool [en] Hai”; “Publieke verkooping “; “Licht”; [16 Westfriesche schetsen] ; “De leepe veldwachter”; genummerd Vri 5 t/m Vri 13.</cmdp:description>
+               <cmdp:oldBoxNumber>D.A. 039</cmdp:oldBoxNumber>
+               <cmdp:TechnicalMetadata>
+                  <cmdp:digital>false</cmdp:digital>
+               </cmdp:TechnicalMetadata>
+            </cmdp:CoreResourceInformation>
+            <cmdp:CoreResourceInformation>
+               <cmdp:inventoryId>5</cmdp:inventoryId>
+               <cmdp:description>Manuscripten betreffende vrijstermarkten. Z.j. 1 map. N.B. Aantekeningen uit Scheltema, Johnson en Berkhey betreffende vrijstermarkten en het concept van een artikel “Iets over vrijstermarkten”.</cmdp:description>
+               <cmdp:oldBoxNumber>D.A. 039</cmdp:oldBoxNumber>
+               <cmdp:TechnicalMetadata>
+                  <cmdp:digital>false</cmdp:digital>
+               </cmdp:TechnicalMetadata>
+            </cmdp:CoreResourceInformation>
+            <cmdp:CoreResourceInformation>
+               <cmdp:inventoryId>6</cmdp:inventoryId>
+               <cmdp:description>Manuscripten betreffende het maalrecht Z.j. 1 map N.B. Aantekeningen uit archiefstukken en het concept van een artikel “Het reght van de wint”.</cmdp:description>
+               <cmdp:oldBoxNumber>D.A. 039</cmdp:oldBoxNumber>
+               <cmdp:TechnicalMetadata>
+                  <cmdp:digital>false</cmdp:digital>
+               </cmdp:TechnicalMetadata>
+            </cmdp:CoreResourceInformation>
+            <cmdp:CoreResourceInformation>
+               <cmdp:inventoryId>7</cmdp:inventoryId>
+               <cmdp:description>Typoscript J. de Vries Az betreffende het dialect van Nieuwe Niedorp (E 024) van. Z.j. 1 map.</cmdp:description>
+               <cmdp:oldBoxNumber>D.A. 032</cmdp:oldBoxNumber>
+               <cmdp:TechnicalMetadata>
+                  <cmdp:digital>false</cmdp:digital>
+               </cmdp:TechnicalMetadata>
+            </cmdp:CoreResourceInformation>
+            <cmdp:CoreResourceInformation>
+               <cmdp:inventoryId>8</cmdp:inventoryId>
+               <cmdp:description>Artikelen en overdrukken 1903-1923. 1 map N.B. “‘n Leepe veldwachter” in Eigen Haard 50 (1924) 794-795 ; “De blaarkemissie” in: Eigen haard jg. 49 (1923) 881-883 (Vri 15); De visitatie eener Papistische Verghaderinge in 1649 in Oud-Holland 37:1/2 (1919); overdruk in De Nieuwe Taalgids van een gedachtenwisseling tussen Boekenoogen en De Vries over de uitgave Westfriese Woorden van J. de Vries Az.4 krantenknipsels uit de Schager en Enkhuizer courant.</cmdp:description>
+               <cmdp:oldBoxNumber>D.A. 039</cmdp:oldBoxNumber>
+               <cmdp:TechnicalMetadata>
+                  <cmdp:digital>false</cmdp:digital>
+               </cmdp:TechnicalMetadata>
+            </cmdp:CoreResourceInformation>
+         </cmdp:Inventory>
+      </cmdp:MeertensCollection>
+   </cmd:Components>
+</cmd:CMD>

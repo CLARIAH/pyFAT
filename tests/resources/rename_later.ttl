@@ -1,0 +1,377 @@
+@prefix cln: <http://www.clarin.eu/ns/rubric#> .
+@prefix fex: <http://example.org/fair/> .
+@prefix ftr: <https://w3id.org/fair_test_result#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix schema: <https://schema.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+fex:pyFAT a schema:SoftwareApplication ;
+    schema:name "pyFAT" ;
+    schema:softwareVersion "0.1.3"^^xsd:string ;
+    schema:url "https://github.com/CLARIAH/pyFAT.git" .
+
+cln:9d110294-deff-4624-aef0-66589fcf019b a cln:AssessmentRubricResultSet ;
+    prov:hadMember fex:CLFIP-A1.1-01M,
+        fex:CLFIP-A1.1-02D,
+        fex:CLFIP-F1-01M,
+        fex:CLFIP-F1-02D,
+        fex:CLFIP-F2-01M,
+        fex:CLFIP-F3-01M,
+        fex:CLFIP-F4-01M,
+        fex:CLFIP-F4-02D ;
+    prov:used fex:assessedResource ;
+    prov:wasDerivedFrom fex:assessedResource ;
+    prov:wasGeneratedBy fex:pyFatExecution ;
+    schema:identifier "9d110294-deff-4624-aef0-66589fcf019b" ;
+    schema:license "https://spdx.org/licenses/WTFPL.html" ;
+    schema:name "CLARIAH-FIP" ;
+    ftr:completion 0.875 ;
+    ftr:isDefinedBy <https://pyfat.huc.knaw.nl/api/v1/metrics/v0.3> ;
+    ftr:status true .
+
+fex:CLFIP-A1.1-01M a ftr:TestResultSet ;
+    prov:hadMember fex:CLFIP-A1.1-01M-1,
+        fex:CLFIP-A1.1-01M-2 ;
+    prov:used fex:assessedResource ;
+    prov:wasDerivedFrom fex:assessedResource ;
+    prov:wasGeneratedBy fex:pyFatExecution ;
+    schema:identifier "CLFIP-A1.1-01M" ;
+    schema:license "https://spdx.org/licenses/WTFPL.html" ;
+    schema:name "metadata communication protocol" ;
+    ftr:completion 1.0 ;
+    ftr:status true .
+
+fex:CLFIP-A1.1-01M-1 a ftr:TestResult ;
+    prov:generatedAtTime "2024-06-08T15:27:26.902292"^^xsd:dateTime ;
+    prov:wasDerivedFrom fex:assessedResource ;
+    schema:description "xpath:empty((//cmd:MsSelfLink,//cmd:ResourceProxy[cmd:ResourceType='Metadata']/cmd:ResourceRef)[not(starts-with(.,'https://') or starts-with(.,'doi:') or starts-with(.,'hdl:'))])" ;
+    schema:identifier "CLFIP-A1.1-01M-1" ;
+    schema:name "all metadata identifiers use HTTPS" ;
+    ftr:isDefinedBy <https://pyfat.huc.knaw.nl/api/v1/metric/CLFIP-A1.1-01M> ;
+    ftr:log "Test modality = all" ;
+    ftr:status true .
+
+fex:CLFIP-A1.1-01M-2 a ftr:TestResult ;
+    prov:generatedAtTime "2024-06-08T15:27:26.903222"^^xsd:dateTime ;
+    prov:wasDerivedFrom fex:assessedResource ;
+    schema:description "xpath:exists((//cmd:MsSelfLink,//cmd:ResourceProxy[cmd:ResourceType='Metadata']/cmd:ResourceRef)[starts-with(.,'https://') or starts-with(.,'doi:') or starts-with(.,'hdl:')])" ;
+    schema:identifier "CLFIP-A1.1-01M-2" ;
+    schema:name "some metadata identifiers use HTTPS" ;
+    ftr:isDefinedBy <https://pyfat.huc.knaw.nl/api/v1/metric/CLFIP-A1.1-01M> ;
+    ftr:log "Test modality = all" ;
+    ftr:status false .
+
+fex:CLFIP-A1.1-02D a ftr:TestResultSet ;
+    prov:hadMember fex:CLFIP-A1.1-02D-1,
+        fex:CLFIP-A1.1-02D-2 ;
+    prov:used fex:assessedResource ;
+    prov:wasDerivedFrom fex:assessedResource ;
+    prov:wasGeneratedBy fex:pyFatExecution ;
+    schema:identifier "CLFIP-A1.1-02D" ;
+    schema:license "https://spdx.org/licenses/WTFPL.html" ;
+    schema:name "data communication protocol" ;
+    ftr:completion 1.0 ;
+    ftr:status true .
+
+fex:CLFIP-A1.1-02D-1 a ftr:TestResult ;
+    prov:generatedAtTime "2024-06-08T15:27:26.904921"^^xsd:dateTime ;
+    prov:wasDerivedFrom fex:assessedResource ;
+    schema:description "xpath:empty(//cmd:ResourceProxy[cmd:ResourceType='Resource']/cmd:ResourceRef[not(starts-with(.,'https://') or starts-with(.,'doi:') or starts-with(.,'hdl:'))])" ;
+    schema:identifier "CLFIP-A1.1-02D-1" ;
+    schema:name "all data identifiers use HTTPS" ;
+    ftr:isDefinedBy <https://pyfat.huc.knaw.nl/api/v1/metric/CLFIP-A1.1-02D> ;
+    ftr:log "Test modality = all" ;
+    ftr:status true .
+
+fex:CLFIP-A1.1-02D-2 a ftr:TestResult ;
+    prov:generatedAtTime "2024-06-08T15:27:26.905928"^^xsd:dateTime ;
+    prov:wasDerivedFrom fex:assessedResource ;
+    schema:description "xpath:exists(//cmd:ResourceProxy[cmd:ResourceType='Resource']/cmd:ResourceRef[starts-with(.,'https://') or starts-with(.,'doi:') or starts-with(.,'hdl:')])" ;
+    schema:identifier "CLFIP-A1.1-02D-2" ;
+    schema:name "some data identifiers use HTTPS" ;
+    ftr:isDefinedBy <https://pyfat.huc.knaw.nl/api/v1/metric/CLFIP-A1.1-02D> ;
+    ftr:log "Test modality = all" ;
+    ftr:status true .
+
+fex:CLFIP-F1-01M a ftr:TestResultSet ;
+    prov:hadMember fex:CLFIP-F1-01M-1,
+        fex:CLFIP-F1-01M-2,
+        fex:CLFIP-F1-01M-3,
+        fex:CLFIP-F1-01M-4,
+        fex:CLFIP-F1-01M-5,
+        fex:CLFIP-F1-01M-6 ;
+    prov:used fex:assessedResource ;
+    prov:wasDerivedFrom fex:assessedResource ;
+    prov:wasGeneratedBy fex:pyFatExecution ;
+    schema:identifier "CLFIP-F1-01M" ;
+    schema:license "https://spdx.org/licenses/WTFPL.html" ;
+    schema:name "Persistent metadata record identifier" ;
+    ftr:completion 1.0 ;
+    ftr:status true .
+
+fex:CLFIP-F1-01M-1 a ftr:TestResult ;
+    prov:generatedAtTime "2024-06-08T15:27:26.038115"^^xsd:dateTime ;
+    prov:wasDerivedFrom fex:assessedResource ;
+    schema:description "xpath:starts-with(//cmd:MdSelfLink, 'hdl:')" ;
+    schema:identifier "CLFIP-F1-01M-1" ;
+    schema:name "Check to see if the selflink is a handle" ;
+    ftr:isDefinedBy <https://pyfat.huc.knaw.nl/api/v1/metric/CLFIP-F1-01M> ;
+    ftr:log "Test modality = all" ;
+    ftr:status false .
+
+fex:CLFIP-F1-01M-2 a ftr:TestResult ;
+    prov:generatedAtTime "2024-06-08T15:27:26.039151"^^xsd:dateTime ;
+    prov:wasDerivedFrom fex:assessedResource ;
+    schema:description "xpath:starts-with(//cmd:MdSelfLink, 'doi:')" ;
+    schema:identifier "CLFIP-F1-01M-2" ;
+    schema:name "Check to see if the selflink is a doi" ;
+    ftr:isDefinedBy <https://pyfat.huc.knaw.nl/api/v1/metric/CLFIP-F1-01M> ;
+    ftr:log "Test modality = all" ;
+    ftr:status false .
+
+fex:CLFIP-F1-01M-3 a ftr:TestResult ;
+    prov:generatedAtTime "2024-06-08T15:27:26.040059"^^xsd:dateTime ;
+    prov:wasDerivedFrom fex:assessedResource ;
+    schema:description "xpath:starts-with(//cmd:MdSelfLink, 'http://hdl.handle.net/')" ;
+    schema:identifier "CLFIP-F1-01M-3" ;
+    schema:name "Check to see if the selflink is a HTTP handle" ;
+    ftr:isDefinedBy <https://pyfat.huc.knaw.nl/api/v1/metric/CLFIP-F1-01M> ;
+    ftr:log "Test modality = all" ;
+    ftr:status false .
+
+fex:CLFIP-F1-01M-4 a ftr:TestResult ;
+    prov:generatedAtTime "2024-06-08T15:27:26.040964"^^xsd:dateTime ;
+    prov:wasDerivedFrom fex:assessedResource ;
+    schema:description "xpath:starts-with(//cmd:MdSelfLink, 'https://hdl.handle.net/')" ;
+    schema:identifier "CLFIP-F1-01M-4" ;
+    schema:name "Check to see if the selflink is a HTTPS handle" ;
+    ftr:isDefinedBy <https://pyfat.huc.knaw.nl/api/v1/metric/CLFIP-F1-01M> ;
+    ftr:log "Test modality = all" ;
+    ftr:status true .
+
+fex:CLFIP-F1-01M-5 a ftr:TestResult ;
+    prov:generatedAtTime "2024-06-08T15:27:26.041912"^^xsd:dateTime ;
+    prov:wasDerivedFrom fex:assessedResource ;
+    schema:description "xpath:starts-with(//cmd:MdSelfLink, 'https://doi.org/10.') or starts-with(//cmd:MdSelfLink, 'https://dx.doi.org/10.')" ;
+    schema:identifier "CLFIP-F1-01M-5" ;
+    schema:name "Check to see if the selflink is a HTTPS doi" ;
+    ftr:isDefinedBy <https://pyfat.huc.knaw.nl/api/v1/metric/CLFIP-F1-01M> ;
+    ftr:log "Test modality = all" ;
+    ftr:status false .
+
+fex:CLFIP-F1-01M-6 a ftr:TestResult ;
+    prov:generatedAtTime "2024-06-08T15:27:26.042803"^^xsd:dateTime ;
+    prov:wasDerivedFrom fex:assessedResource ;
+    schema:description "xpath:starts-with(//cmd:MdSelfLink, 'http://doi.org/10.')" ;
+    schema:identifier "CLFIP-F1-01M-6" ;
+    schema:name "Check to see if the selflink is a HTTP doi" ;
+    ftr:isDefinedBy <https://pyfat.huc.knaw.nl/api/v1/metric/CLFIP-F1-01M> ;
+    ftr:log "Test modality = all" ;
+    ftr:status false .
+
+fex:CLFIP-F1-02D a ftr:TestResultSet ;
+    prov:hadMember fex:CLFIP-F1-02D-1,
+        fex:CLFIP-F1-02D-2,
+        fex:CLFIP-F1-02D-3,
+        fex:CLFIP-F1-02D-4,
+        fex:CLFIP-F1-02D-5,
+        fex:CLFIP-F1-02D-6,
+        fex:CLFIP-F1-02D-7 ;
+    prov:used fex:assessedResource ;
+    prov:wasDerivedFrom fex:assessedResource ;
+    prov:wasGeneratedBy fex:pyFatExecution ;
+    schema:identifier "CLFIP-F1-02D" ;
+    schema:license "https://spdx.org/licenses/WTFPL.html" ;
+    schema:name "Persistent data identifiers" ;
+    ftr:completion 1.0 ;
+    ftr:status true .
+
+fex:CLFIP-F1-02D-1 a ftr:TestResult ;
+    prov:generatedAtTime "2024-06-08T15:27:26.046496"^^xsd:dateTime ;
+    prov:wasDerivedFrom fex:assessedResource ;
+    schema:description "xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType='Resource']/cmd:ResourceRef, function($a) { starts-with($a, 'hdl:') })" ;
+    schema:identifier "CLFIP-F1-02D-1" ;
+    schema:name "Check to see if the Resource ResourceProxy is a handle" ;
+    ftr:isDefinedBy <https://pyfat.huc.knaw.nl/api/v1/metric/CLFIP-F1-02D> ;
+    ftr:log "Test modality = any" ;
+    ftr:status false .
+
+fex:CLFIP-F1-02D-2 a ftr:TestResult ;
+    prov:generatedAtTime "2024-06-08T15:27:26.047548"^^xsd:dateTime ;
+    prov:wasDerivedFrom fex:assessedResource ;
+    schema:description "xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType='Resource']/cmd:ResourceRef, function($a) { starts-with($a, 'doi:') })" ;
+    schema:identifier "CLFIP-F1-02D-2" ;
+    schema:name "Check to see if the Resource ResourceProxy is a doi" ;
+    ftr:isDefinedBy <https://pyfat.huc.knaw.nl/api/v1/metric/CLFIP-F1-02D> ;
+    ftr:log "Test modality = any" ;
+    ftr:status false .
+
+fex:CLFIP-F1-02D-3 a ftr:TestResult ;
+    prov:generatedAtTime "2024-06-08T15:27:26.048565"^^xsd:dateTime ;
+    prov:wasDerivedFrom fex:assessedResource ;
+    schema:description "xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType='Resource']/cmd:ResourceRef, function($a) { starts-with($a, 'http://hdl.handle.net/') })" ;
+    schema:identifier "CLFIP-F1-02D-3" ;
+    schema:name "Check to see if the Resource ResourceProxy is a HTTP handle" ;
+    ftr:isDefinedBy <https://pyfat.huc.knaw.nl/api/v1/metric/CLFIP-F1-02D> ;
+    ftr:log "Test modality = any" ;
+    ftr:status false .
+
+fex:CLFIP-F1-02D-4 a ftr:TestResult ;
+    prov:generatedAtTime "2024-06-08T15:27:26.049583"^^xsd:dateTime ;
+    prov:wasDerivedFrom fex:assessedResource ;
+    schema:description "xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType='Resource']/cmd:ResourceRef, function($a) { starts-with($a, 'https://hdl.handle.net/') })" ;
+    schema:identifier "CLFIP-F1-02D-4" ;
+    schema:name "Check to see if the Resource ResourceProxy is a HTTPS handle" ;
+    ftr:isDefinedBy <https://pyfat.huc.knaw.nl/api/v1/metric/CLFIP-F1-02D> ;
+    ftr:log "Test modality = any" ;
+    ftr:status true .
+
+fex:CLFIP-F1-02D-5 a ftr:TestResult ;
+    prov:generatedAtTime "2024-06-08T15:27:26.050537"^^xsd:dateTime ;
+    prov:wasDerivedFrom fex:assessedResource ;
+    schema:description "xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType='Resource']/cmd:ResourceRef, function($a) { starts-with($a, 'https://doi.org/10.') })" ;
+    schema:identifier "CLFIP-F1-02D-5" ;
+    schema:name "Check to see if the Resource ResourceProxy is a HTTPS doi" ;
+    ftr:isDefinedBy <https://pyfat.huc.knaw.nl/api/v1/metric/CLFIP-F1-02D> ;
+    ftr:log "Test modality = any" ;
+    ftr:status false .
+
+fex:CLFIP-F1-02D-6 a ftr:TestResult ;
+    prov:generatedAtTime "2024-06-08T15:27:26.051523"^^xsd:dateTime ;
+    prov:wasDerivedFrom fex:assessedResource ;
+    schema:description "xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType='Resource']/cmd:ResourceRef, function($a) { starts-with($a, 'http://doi.org/10.') })" ;
+    schema:identifier "CLFIP-F1-02D-6" ;
+    schema:name "Check to see if the Resource ResourceProxy is a HTTP doi" ;
+    ftr:isDefinedBy <https://pyfat.huc.knaw.nl/api/v1/metric/CLFIP-F1-02D> ;
+    ftr:log "Test modality = any" ;
+    ftr:status false .
+
+fex:CLFIP-F1-02D-7 a ftr:TestResult ;
+    prov:generatedAtTime "2024-06-08T15:27:26.052537"^^xsd:dateTime ;
+    prov:wasDerivedFrom fex:assessedResource ;
+    schema:description "xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType='Resource']/cmd:ResourceRef, function($a) { $a castable as xs:anyURI })" ;
+    schema:identifier "CLFIP-F1-02D-7" ;
+    schema:name "Check to see if the Resource ResourceProxy is a valid URI" ;
+    ftr:isDefinedBy <https://pyfat.huc.knaw.nl/api/v1/metric/CLFIP-F1-02D> ;
+    ftr:log "Test modality = any" ;
+    ftr:status true .
+
+fex:CLFIP-F2-01M a ftr:TestResultSet ;
+    prov:used fex:assessedResource ;
+    prov:wasDerivedFrom fex:assessedResource ;
+    prov:wasGeneratedBy fex:pyFatExecution ;
+    schema:identifier "CLFIP-F2-01M" ;
+    schema:license "https://spdx.org/licenses/WTFPL.html" ;
+    schema:name "metadata schema for findability" ;
+    ftr:completion 1.0 ;
+    ftr:status true .
+
+fex:CLFIP-F3-01M a ftr:TestResultSet ;
+    prov:hadMember fex:CLFIP-F3-01M-1,
+        fex:CLFIP-F3-01M-2 ;
+    prov:used fex:assessedResource ;
+    prov:wasDerivedFrom fex:assessedResource ;
+    prov:wasGeneratedBy fex:pyFatExecution ;
+    schema:identifier "CLFIP-F3-01M" ;
+    schema:license "https://spdx.org/licenses/WTFPL.html" ;
+    schema:name "metadata linkage technology" ;
+    ftr:completion 1.0 ;
+    ftr:status true .
+
+fex:CLFIP-F3-01M-1 a ftr:TestResult ;
+    prov:generatedAtTime "2024-06-08T15:27:26.891647"^^xsd:dateTime ;
+    prov:wasDerivedFrom fex:assessedResource ;
+    schema:description "xpath:(count(//cmd:ResourceProxy) gt 1)" ;
+    schema:identifier "CLFIP-F3-01M-1" ;
+    schema:name "Multiple resource proxies available" ;
+    ftr:isDefinedBy <https://pyfat.huc.knaw.nl/api/v1/metric/CLFIP-F3-01M> ;
+    ftr:log "Test modality = all" ;
+    ftr:status true .
+
+fex:CLFIP-F3-01M-2 a ftr:TestResult ;
+    prov:generatedAtTime "2024-06-08T15:27:26.892450"^^xsd:dateTime ;
+    prov:wasDerivedFrom fex:assessedResource ;
+    schema:description "xpath:(count(//cmd:ResourceProxy) eq 1)" ;
+    schema:identifier "CLFIP-F3-01M-2" ;
+    schema:name "One resource proxy avaiable" ;
+    ftr:isDefinedBy <https://pyfat.huc.knaw.nl/api/v1/metric/CLFIP-F3-01M> ;
+    ftr:log "Test modality = all" ;
+    ftr:status false .
+
+fex:CLFIP-F4-01M a ftr:TestResultSet ;
+    prov:hadMember fex:CLFIP-F4-01M-1,
+        fex:CLFIP-F4-01M-2 ;
+    prov:used fex:assessedResource ;
+    prov:wasDerivedFrom fex:assessedResource ;
+    prov:wasGeneratedBy fex:pyFatExecution ;
+    schema:identifier "CLFIP-F4-01M" ;
+    schema:license "https://spdx.org/licenses/WTFPL.html" ;
+    schema:name "metadata origin" ;
+    ftr:completion 1.0 ;
+    ftr:status true .
+
+fex:CLFIP-F4-01M-1 a ftr:TestResult ;
+    prov:generatedAtTime "2024-06-08T15:27:26.895405"^^xsd:dateTime ;
+    prov:wasDerivedFrom fex:assessedResource ;
+    schema:description "xpath:$facets/js:map/js:string[@key='_harvesterRoot']='CLARIN Partners'" ;
+    schema:identifier "CLFIP-F4-01M-1" ;
+    schema:name "CLARIAH partners that are also CLARIN partners" ;
+    ftr:isDefinedBy <https://pyfat.huc.knaw.nl/api/v1/metric/CLFIP-F4-01M> ;
+    ftr:log "Test modality = all, declare variable $facets external;" ;
+    ftr:status true .
+
+fex:CLFIP-F4-01M-2 a ftr:TestResult ;
+    prov:generatedAtTime "2024-06-08T15:27:26.897507"^^xsd:dateTime ;
+    prov:wasDerivedFrom fex:assessedResource ;
+    schema:description "xpath:$facets//js:map/js:string[@key='_harvesterRoot']='NDE'" ;
+    schema:identifier "CLFIP-F4-01M-2" ;
+    schema:name "CLARIAH partners that are also NDE partners" ;
+    ftr:isDefinedBy <https://pyfat.huc.knaw.nl/api/v1/metric/CLFIP-F4-01M> ;
+    ftr:log "Test modality = all, declare variable $facets external;" ;
+    ftr:status false .
+
+fex:CLFIP-F4-02D a ftr:TestResultSet ;
+    prov:hadMember fex:CLFIP-F4-02D-1,
+        fex:CLFIP-F4-02D-2 ;
+    prov:used fex:assessedResource ;
+    prov:wasDerivedFrom fex:assessedResource ;
+    prov:wasGeneratedBy fex:pyFatExecution ;
+    schema:identifier "CLFIP-F4-02D" ;
+    schema:license "https://spdx.org/licenses/WTFPL.html" ;
+    schema:name "data search" ;
+    ftr:completion 0.0 ;
+    ftr:status false .
+
+fex:CLFIP-F4-02D-1 a ftr:TestResult ;
+    prov:generatedAtTime "2024-06-08T15:27:26.899639"^^xsd:dateTime ;
+    prov:wasDerivedFrom fex:assessedResource ;
+    schema:description "xpath:exists(//cmd:ResourceProxy[cmd:ResourceType='SearchService'])" ;
+    schema:identifier "CLFIP-F4-02D-1" ;
+    schema:name "search data via a search service" ;
+    ftr:isDefinedBy <https://pyfat.huc.knaw.nl/api/v1/metric/CLFIP-F4-02D> ;
+    ftr:log "Test modality = all" ;
+    ftr:status false .
+
+fex:CLFIP-F4-02D-2 a ftr:TestResult ;
+    prov:generatedAtTime "2024-06-08T15:27:26.900662"^^xsd:dateTime ;
+    prov:wasDerivedFrom fex:assessedResource ;
+    schema:description "xpath:exists(//cmd:ResourceProxy[cmd:ResourceType='SearchPage'])" ;
+    schema:identifier "CLFIP-F4-02D-2" ;
+    schema:name "search data via a search page" ;
+    ftr:isDefinedBy <https://pyfat.huc.knaw.nl/api/v1/metric/CLFIP-F4-02D> ;
+    ftr:log "Test modality = all" ;
+    ftr:status false .
+
+fex:agent a prov:Agent ;
+    schema:identifier "0000-0002-5228-1970" ;
+    schema:name "VLO-Harvester" .
+
+fex:pyFatExecution a ftr:TestExecutionActivity ;
+    prov:endedAtTime "2024-06-08T15:27:26.907111"^^xsd:dateTime ;
+    prov:startedAtTime "2024-06-08T15:27:26.031772"^^xsd:dateTime ;
+    prov:used fex:assessedResource ;
+    prov:wasStartedBy fex:agent ;
+    ftr:usedAPI "https://pyfat.huc.knaw.nl/api/v1/"^^xsd:anyURI .
+
+fex:assessedResource a prov:Entity ;
+    schema:url "/Users/vic/Documents/DI/projects/CLARIAH/pyFAT/tests/resources/cmdi/rename_later.xml" .
