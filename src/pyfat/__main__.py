@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 from importlib import resources
 from typing import List
+from rdflib import Graph
 
 import toml
 from saxonche import PySaxonProcessor, PyXdmValue, PySaxonApiError
@@ -96,7 +97,20 @@ def evaluate(cmdi_record_path: str, variables_dict: dict = {}) -> FipAssessmentO
             for metric_test in metric["metric_tests"]:
                 logger.debug(f'\t=> Test: {metric_test["metric_test_name"]}')
                 for metric_test_requirement in metric_test["metric_test_requirements"]:
-                    if metric_test_requirement["test"].startswith("xpath:"):  # In Xpath handler... TODO: implement logic for different handlers here (i.e: xpath, Python, etc. Factory)
+                    if metric_test_requirement["test"].startswith("ask:"):
+                        # TODO [later]: keep the graph around so we don't have to set it up again
+                        # TODO: load the ttl using rdflib
+                        g = Graph()
+                        g.parse(data=cmdi_record_path, format="turtle")
+                        # TODO: evaluate the SPARQL query
+                        ask_result = g.query(metric_test_requirement["test"])
+                        if ask_result:
+                            # result is True: do something
+                            pass
+                    elif metric_test_requirement["test"].startswith("xpath:"):                        
+                        # In Xpath handler... TODO: implement logic for different handlers here (i.e: xpath, Python, etc. Factory)
+                        # TODO: push all the xpproc setup to here
+                        # TODO [later]: keep the xpproc around so we don't have to set it up again
 
                         xslt_result = None  # reset results...
                         log = f'Test modality = {metric_test_requirement["modality"]}'
