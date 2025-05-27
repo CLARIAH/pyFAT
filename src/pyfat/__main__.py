@@ -49,6 +49,14 @@ def get_test_result(result_list: List[PyXdmValue], testmodality: Modality, max_t
             score = round(item.double_value * max_tst_score, 1) if success else 0
     return TestResult(success, score, test_id, testname, testvalue, log, metricid, datetime.now())
 
+def getXProc(proc: PySaxonProcessor) -> PySaxonProcessor:
+    xpproc = proc.new_xquery_processor()
+    # Load our namespaces into the XSLT processor:
+    for k, v in Preprocessor.get_nspace_map().items():
+        xpproc.declare_namespace(k, v)
+    xpproc.set_cwd(os.getcwd())
+    return xpproc
+
 
 def evaluate(cmdi_record_path: str, variables_dict: dict = {}) -> FipAssessmentOutput:  # Make sure to start the solrproxy.py tool to bypass basicAuth.
     """
@@ -71,13 +79,6 @@ def evaluate(cmdi_record_path: str, variables_dict: dict = {}) -> FipAssessmentO
 
     with PySaxonProcessor(license=False) as proc:
         logger.debug(f"Processor: {proc.version}")
-        xpproc = proc.new_xquery_processor()
-
-        # Load our namespaces into the XSLT processor:
-        for k, v in Preprocessor.get_nspace_map().items():
-            xpproc.declare_namespace(k, v)
-
-        xpproc.set_cwd(os.getcwd())
 
         logger.debug(f'CMDI FILE: {str(cmdi_record_path)}, {os.path.basename(cmdi_record_path)}')
 
@@ -96,17 +97,20 @@ def evaluate(cmdi_record_path: str, variables_dict: dict = {}) -> FipAssessmentO
                 for metric_test_requirement in metric_test["metric_test_requirements"]:
                     if metric_test_requirement["test"].startswith("ask:"):
                         # TODO [later]: keep the graph around so we don't have to set it up again
-                        # TODO: load the ttl using rdflib
                         g = Graph()
+                        # DONE: load the ttl using rdflib
+                        # cmdi_record_path is available but in this case it should contains ttl !!!
                         g.parse(data=cmdi_record_path, format="turtle")
-                        # TODO: evaluate the SPARQL query
+                        # DONE: evaluate the SPARQL query
                         ask_result = g.query(metric_test_requirement["test"])
                         if ask_result:
-                            # result is True: do something
+                            # result is True: continu as in lines 121... ?
                             pass
                     elif metric_test_requirement["test"].startswith("xpath:"):                        
                         # In Xpath handler... TODO: implement logic for different handlers here (i.e: xpath, Python, etc. Factory)
-                        # TODO: push all the xpproc setup to here
+                        # DONE: push all the xpproc setup to here
+                        xpproc = getXProc(proc)
+                        # xpproc is used  
                         # TODO [later]: keep the xpproc around so we don't have to set it up again
 
                         xslt_result = None  # reset results...
