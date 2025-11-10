@@ -5,7 +5,7 @@ app_url = "https://github.com/CLARIAH/pyFAT"
 dynaconf_env = "DEFAULT"
 loggers = [{ "name" = "pyfat", "log_file" = "pyfat.log", "log_level" = 30, "log_format" = "%(asctime)s %(levelname)s: %(message)s", "log_date_format" = "%Y-%m-%d %H:%M:%S" }]
 #log_file = "@format {env[BASE_DIR]}/logs/pyfat.log"
-vlo_solr_url = 'http://localhost:9098/solr/vlo-index'
+#vlo_solr_url = 'http://localhost:9098/solr/vlo-index'
 metrics_file = "clarin_fip_metrics_v0.3.yaml" # internet file or local
 #metrics_pckg = "pyfat.resources.metrics"
 #nspace_file = "namespaces.json"

@@ -10,6 +10,8 @@ from rdflib.namespace import RDF, XSD
 from pyfat import commons
 from pyfat.fip.testresult import TestResult, MetricResult
 
+import pyfat.resources as resources
+
 
 class FipAssessmentOutput:
     """
@@ -25,7 +27,9 @@ class FipAssessmentOutput:
     #     load_dotenv=True,
     # )
 
-    settings = commons.setup_env("settings.toml")
+    settings_path = os.path.join(os.path.dirname(resources.__file__), "settings.toml")
+    print("FipAssessmentOutput: loading settings from", settings_path)
+    settings = commons.setup_env(settings_path)
     score = None
 
     def __init__(self, appname: str, version: str, scm: str):

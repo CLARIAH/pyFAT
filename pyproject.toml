@@ -23,13 +23,13 @@ dependencies = [
 ]
 
 [tool.setuptools]
-packages = ["pyfat"]
+packages = ["pyfat", "pyfat.resources", "pyfat.fip", "pyfat.solr"]
 package-dir = {"" = "src"}
 
 [tool.setuptools.package-data]
-"pyfat" = [
+"pyfat.resources" = [
     "settings.toml",
-    "clarin_fip_metrics_v0.3.yaml"
+    "metrics/clarin_fip_metrics_v0.3.yaml"
 ]
 
 [build-system]

@@ -13,6 +13,7 @@ from pyfat.commons import setup_logging
 from pyfat.fip.fipassessmentoutput import FipAssessmentOutput
 from pyfat.fip.preprocessor import Preprocessor
 from pyfat.fip.testresult import TestResult, MetricResult, Modality
+from pyfat import resources as pyfat_resources
 
 
 def get_metric_result(tst_results: List[TestResult], modality: Modality, max_score: float, metric_id: str, metric_name: str, metric_description: str) -> MetricResult:
@@ -67,7 +68,9 @@ def evaluate(cmdi_record_path: str, variables_dict: dict = {}) -> FipAssessmentO
     :param variables_dict: The corresponding record of the cmdi record got from the Solr indexer of VLO
     """
     # Load settings config:
-    settings = commons.setup_env("settings.toml")
+    settings_path = os.path.join(os.path.dirname(pyfat_resources.__file__), "settings.toml")
+    print("main: loading settings from", settings_path)
+    settings = commons.setup_env(settings_path)
     logger = setup_logging(settings)
 
     # Process/parse Metrics definition
@@ -86,6 +89,7 @@ def evaluate(cmdi_record_path: str, variables_dict: dict = {}) -> FipAssessmentO
         assessment_output.set_assessedresource(str(cmdi_record_path))
         assessment_output.start_execution_activity(settings.PROV_AGENT_NAME, settings.PROV_AGENT_IDENTIFIER)
 
+        xpproc = getXProc(proc)
         xpproc.set_context(file_name=str(cmdi_record_path))
         metricresults_list: List[MetricResult] = []  # List of MetricResult per assessment
         for metric in Preprocessor.get_metrics():
