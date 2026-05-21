@@ -5,6 +5,7 @@ config:
     cmd: http://www.clarin.eu/cmd/1
     cmdp: http://www.clarin.eu/cmd/1/profiles/clarin.eu:cr1:p_1288172614026
     js: http://www.w3.org/2005/xpath-functions
+  metric_infrastructure: clarin
 
 metrics:
   - metric_identifier: CLFIP-F1-01M
